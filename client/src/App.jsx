@@ -1,6 +1,6 @@
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import { ToastContainer } from 'react-toastify';
-import Home from "./pages/Home";
+import Dashboard from "./pages/Dashboard";
 import Vaccinations from "./pages/Vaccinations";
 import Pedigree from "./pages/Pedigree";
 import Treatment from "./pages/Treatment";
@@ -21,10 +21,10 @@ function App() {
         <Route path="/register" element={<Register />} />
 
         <Route
-          path="/home"
+          path="/dashboard"
           element={
             <ProtectedRoute>
-              <Home />
+              <Dashboard />
             </ProtectedRoute>
           }
         />

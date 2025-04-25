@@ -37,7 +37,7 @@ const Login = () => {
       const response = await loginUser( email, password );
       toast.success("Login successful!");
       localStorage.setItem("token", response.token);
-      navigate("/home");
+      navigate("/dashboard");
     } catch (error) {
       toast.error(error.response?.data?.message || "Login failed");
     }
