@@ -1,4 +1,3 @@
-// Login.jsx
 import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import AuthLayout from "../components/AuthLayout";
@@ -7,19 +6,19 @@ import { toast } from 'react-toastify';
 import { loginUser } from "../services/api";
 
 const Login = () => {
-  const [email, setEmail] = useState("");
+  const [phoneNumber, setPhoneNumber] = useState("");
   const [password, setPassword] = useState("");
   const navigate = useNavigate();
 
-  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  const phoneRegex = /^[0-9]{10,15}$/;
 
-  const validateEmailAndPassword = ({ email, password }) => {
-    if (!email || !password) {
+  const validatePhoneAndPassword = ({ phoneNumber, password }) => {
+    if (!phoneNumber || !password) {
       toast.error("Please fill in all fields");
       return false;
     }
-    if (!emailRegex.test(email)) {
-      toast.error("Enter a valid email address");
+    if (!phoneRegex.test(phoneNumber)) {
+      toast.error("Enter a valid phone number");
       return false;
     }
     if (password.length < 6) {
@@ -31,10 +30,10 @@ const Login = () => {
 
   const handleLogin = async (e) => {
     e.preventDefault();
-    if (!validateEmailAndPassword({ email, password })) return;
-  
+    if (!validatePhoneAndPassword({ phoneNumber, password })) return;
+
     try {
-      const response = await loginUser( email, password );
+      const response = await loginUser({ phoneNumber, password });
       toast.success("Login successful!");
       localStorage.setItem("token", response.token);
       navigate("/dashboard");
@@ -54,24 +53,26 @@ const Login = () => {
       >
         <div className="relative">
           <input
-            type="email"
-            placeholder="Email"
-            className="w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-green-500 transition-transform duration-300 transform hover:scale-105 bg-white placeholder:text-gray-400"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
+            type="tel"
+            placeholder="Phone Number"
+            className="w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-green-500 bg-white"
+            value={phoneNumber}
+            onChange={(e) => setPhoneNumber(e.target.value)}
             required
           />
         </div>
+
         <div className="relative">
           <input
             type="password"
             placeholder="Password"
-            className="w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-green-500 transition-transform duration-300 transform hover:scale-105 bg-white placeholder:text-gray-400"
+            className="w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-green-500 bg-white"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             required
           />
         </div>
+
         <motion.button
           type="submit"
           whileHover={{ scale: 1.05 }}
@@ -80,6 +81,7 @@ const Login = () => {
         >
           Login
         </motion.button>
+
         <p className="text-center text-sm text-gray-500">
           Don't have an account?{' '}
           <Link to="/register" className="text-green-600 hover:underline">

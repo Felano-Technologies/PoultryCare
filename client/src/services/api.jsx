@@ -2,7 +2,8 @@ import axios from "axios";
 import toast from "react-hot-toast";
 
 const API = axios.create({
-  baseURL: "http://localhost:5000/api",
+  // baseURL: "http://localhost:5000/api",
+  baseURL: "http://172.20.10.2:5000/api",
 });
 
 // Automatically attach token if available
@@ -26,16 +27,23 @@ API.interceptors.response.use(
 );
 
 // --- Auth ---
-export const registerUser = async (email, password, farmName) => {
-  const { data } = await API.post("/auth/register", { email, password, farmName });
-  return data;
+export const registerUser = async (userData) => {
+  const response = await API.post("/auth/register", userData);
+  return response.data;
 };
 
-export const loginUser = async (email, password) => {
-  const { data } = await API.post("/auth/login", { email, password });
-  return data;
+export const loginUser = async (userData) => {
+  const response = await API.post("/auth/login", userData);
+  return response.data;
 };
 
-
+export const fetchUserProfile = async (token) => {
+  const response = await API.get("/auth/profile", {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+  return response.data;
+};
 
 export default API;

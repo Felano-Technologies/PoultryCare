@@ -10,6 +10,8 @@ import Biosecurity from "./pages/Biosecurity";
 import Diagnosis from "./pages/Diagnosis"; 
 import Login from "./pages/Login";
 import Register from "./pages/Register";
+import Profile from "./pages/Profile";
+import AI from "./pages/AI";
 import NotFound from "./pages/NotFound";
 import ProtectedRoute from "./components/ProtectedRoute";
 
@@ -25,6 +27,22 @@ function App() {
           element={
             <ProtectedRoute>
               <Dashboard />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/profile"
+          element={
+            <ProtectedRoute>
+              <Profile />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/ai-assistant"
+          element={
+            <ProtectedRoute>
+              <AI />
             </ProtectedRoute>
           }
         />
