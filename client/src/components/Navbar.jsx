@@ -81,12 +81,11 @@ export default function Navbar() {
 
       {/* Desktop Menu */}
       <div className="hidden md:flex space-x-6">
+      <Link to="/dashboard" className="text-gray-700 hover:text-green-600 transition">Home</Link>
       <Link to="/ai-assistant" className="text-gray-700 hover:text-green-600 transition">AI Assistant</Link>
-        <Link to="/vaccination" className="text-gray-700 hover:text-green-600 transition">Vaccination</Link>
+        <Link to="/vaccinations" className="text-gray-700 hover:text-green-600 transition">Vaccination</Link>
         <Link to="/pedigree" className="text-gray-700 hover:text-green-600 transition">Pedigree Tracking</Link>
-        <Link to="/treatment" className="text-gray-700 hover:text-green-600 transition">Treatment Protocols</Link>
         <Link to="/community" className="text-gray-700 hover:text-green-600 transition">Community Forum</Link>
-        {/* <Link to="/biosecurity" className="text-gray-700 hover:text-green-600 transition">Biosecurity</Link> */}
       </div>
 
       {/* Farm Profile and Logout */}
@@ -123,12 +122,11 @@ export default function Navbar() {
       {menuOpen && (
         <div className="absolute top-16 left-0 w-full bg-white shadow-md rounded-lg py-4 z-50">
           <div className="flex flex-col space-y-4 items-center">
+          <Link to="/dashboard" onClick={toggleMenu} className="text-gray-700 hover:text-green-600 transition">Home</Link>
           <Link to="/ai-assistant" onClick={toggleMenu} className="text-gray-700 hover:text-green-600 transition">AI Assistant</Link>
-            <Link to="/vaccination" onClick={toggleMenu} className="text-gray-700 hover:text-green-600 transition">Vaccination</Link>
+            <Link to="/vaccinations" onClick={toggleMenu} className="text-gray-700 hover:text-green-600 transition">Vaccination</Link>
             <Link to="/pedigree" onClick={toggleMenu} className="text-gray-700 hover:text-green-600 transition">Pedigree Tracking</Link>
-            <Link to="/treatment" onClick={toggleMenu} className="text-gray-700 hover:text-green-600 transition">Treatment Protocols</Link>
             <Link to="/community" onClick={toggleMenu} className="text-gray-700 hover:text-green-600 transition">Community Forum</Link>
-            {/* <Link to="/biosecurity" onClick={toggleMenu} className="text-gray-700 hover:text-green-600 transition">Biosecurity</Link> */}
             <Link to="/profile" onClick={toggleMenu} className="text-gray-700 hover:text-green-600 transition">Profile</Link>
             <button onClick={() => { toggleMenu(); setShowLogoutConfirm(true); }} className="text-red-500 hover:underline">Logout</button>
           </div>

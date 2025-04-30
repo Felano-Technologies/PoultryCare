@@ -1,12 +1,16 @@
-// pages/AIAssistant.jsx
 import React, { useState, useRef, useEffect } from 'react';
-import axios from 'axios';
+
+
 import {
   PaperClipIcon,
   MicrophoneIcon,
   PaperAirplaneIcon
 } from '@heroicons/react/24/outline';
 import SpeechRecognition, { useSpeechRecognition } from 'react-speech-recognition';
+import { useNavigate } from 'react-router-dom';
+import { ArrowLeftIcon } from '@heroicons/react/24/outline';
+import API from '../services/api';
+
 
 export default function AIAssistant() {
   const [messages, setMessages] = useState([
@@ -16,6 +20,8 @@ export default function AIAssistant() {
   const [upload, setUpload] = useState(null);
   const [loading, setLoading] = useState(false);
   const chatEndRef = useRef(null);
+  const navigate = useNavigate();
+
 
   const { transcript, listening, resetTranscript } = useSpeechRecognition();
 
@@ -50,11 +56,11 @@ export default function AIAssistant() {
       if (upload) {
         const formData = new FormData();
         formData.append('image', upload);
-        const uploadRes = await axios.post('http://localhost:5000/upload', formData);
-        imageUrl = `http://localhost:5000/images/${uploadRes.data.filename}`;
+        const uploadRes = await API.post('ai/upload', formData);
+        imageUrl = `ai/images/${uploadRes.data.filename}`;
       }
 
-      const response = await axios.post('http://localhost:5000/ask', {
+      const response = await API.post('ai/ask', {
         question: userMessage.content,
         image: imageUrl
       });
@@ -78,9 +84,18 @@ export default function AIAssistant() {
   return (
     <div className="flex flex-col h-screen bg-gray-100">
       {/* Sticky Header */}
-      <header className="sticky top-0 z-10 bg-white shadow-md p-4 text-xl font-bold text-green-600">
-        Poultry AI Assistant
+      <header className="sticky top-0 z-10 bg-white shadow-md p-4 flex items-center justify-between">
+        <button
+          onClick={() => navigate(-1)} // or navigate('/dashboard') for a specific route
+          className="flex items-center text-green-600 hover:text-green-700 transition"
+        >
+          <ArrowLeftIcon className="h-5 w-5 mr-1" />
+          Back
+        </button>
+
+        <h1 className="text-xl font-bold text-green-600">Poultry AI Assistant</h1>
       </header>
+
 
       {/* Chat Area */}
       <main className="flex-1 overflow-y-auto px-4 py-6 space-y-4">
