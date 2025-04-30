@@ -16,13 +16,13 @@ export default function Navbar() {
         setUser(userData);
       } catch (error) {
         console.error(error);
-        navigate("/"); 
+        navigate("/login"); 
       }
     };
     if (token) {
       loadUser();
     } else {
-      navigate("/");
+      navigate("/login");
     }
   }, [navigate]);
 
@@ -32,7 +32,7 @@ export default function Navbar() {
 
   const handleLogout = () => {
     localStorage.removeItem("token");
-    navigate("/");
+    navigate("/login");
   };
 
   const getInitials = (name) => {
@@ -71,7 +71,7 @@ export default function Navbar() {
 
       {/* Logo */}
       <div className="flex items-center space-x-4">
-        <Link to="/" className="flex items-center space-x-2">
+        <Link to="/dashboard" className="flex items-center space-x-2">
           <img src="/logo.png" alt="PoultryCare Logo" className="h-8 w-8 object-cover" />
           <span className="text-xl font-bold text-green-600 hidden md:block">
             PoultryCare

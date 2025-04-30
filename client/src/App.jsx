@@ -9,6 +9,7 @@ import Community from "./pages/Community";
 import Biosecurity from "./pages/Biosecurity";
 import Diagnosis from "./pages/Diagnosis"; 
 import Login from "./pages/Login";
+import LandPage from "./pages/LandPage";
 import Register from "./pages/Register";
 import Profile from "./pages/Profile";
 import AI from "./pages/AI";
@@ -19,7 +20,8 @@ function App() {
   return (
     <Router>
       <Routes>
-        <Route path="/" element={<Login />} />
+        <Route path="/" element={<LandPage />} />
+        <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
 
         <Route
