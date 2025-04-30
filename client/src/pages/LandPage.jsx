@@ -216,43 +216,45 @@ export default function LandingPage() {
 
       
 
-      {/* Final CTA Section */}
-      <section className="bg-green-500 py-16 text-white text-center">
-        <div className="max-w-3xl mx-auto px-4">
-          <h2 className="text-3xl font-bold mb-4">Start Managing Your Poultry Farm Better</h2>
-          <p className="text-lg mb-6">
-            Join other farmers using PoultryCare to protect flocks, boost productivity, and simplify their record keeping.
-          </p>
-          <Link
-            to="/register"
-            className="bg-white text-green-600 font-semibold px-6 py-3 rounded-lg hover:bg-gray-100 transition"
-          >
-            Get Started Now
-          </Link>
-        </div>
-      </section>
+    {/* Final CTA Section */}
+    <section className="bg-green-500 py-16 text-white text-center">
+      <div className="max-w-3xl mx-auto px-4">
+        <h2 className="text-3xl font-bold mb-4">Start Managing Your Poultry Farm Better</h2>
+        <p className="text-lg mb-6">
+          Join other farmers using PoultryCare to protect their flocks, improve productivity, and simplify their records.
+        </p>
+        <Link
+          to="/register"
+          className="bg-white text-green-600 font-semibold px-6 py-3 rounded-lg hover:bg-gray-100 transition"
+        >
+          Get Started Now
+        </Link>
+      </div>
+    </section>
 
-      {/* Footer */}
-      <footer className="bg-gray-100 py-10 px-6">
-        <div className="max-w-6xl mx-auto flex flex-col md:flex-row justify-between items-center text-sm text-gray-600">
-          {/* Brand */}
-          <div className="flex items-center mb-4 md:mb-0">
-            <img src="/logo.png" alt="PoultryCare Logo" className="h-6 mr-2" />
-            <span className="font-semibold">PoultryCare</span>
-          </div>
 
-          {/* Links */}
-          <div className="flex space-x-6">
-            <a href="#features" className="hover:text-green-600">Features</a>
-            <a href="#about" className="hover:text-green-600">About</a>
-            <a href="#contact" className="hover:text-green-600">Contact</a>
-            <Link to="/login" className="hover:text-green-600">Login</Link>
-          </div>
+    {/* Footer */}
+    <footer className="bg-gray-100 py-10 px-6">
+      <div className="max-w-6xl mx-auto flex flex-col md:flex-row justify-between items-center text-sm text-gray-600">
+        {/* Brand */}
+        <div className="flex items-center mb-4 md:mb-0">
+          <img src="/logo.png" alt="PoultryCare Logo" className="h-6 mr-2" />
+          <span className="font-semibold">PoultryCare</span>
         </div>
-        <div className="text-center text-xs text-gray-400 mt-4">
-          &copy; {new Date().getFullYear()} PoultryCare. All rights reserved.
+
+        {/* Links */}
+        <div className="flex space-x-6">
+          <a href="#features" className="hover:text-green-600">Features</a>
+          <a href="#about" className="hover:text-green-600">About</a>
+          <a href="#contact" className="hover:text-green-600">Contact</a>
+          <Link to="/login" className="hover:text-green-600">Login</Link>
         </div>
-      </footer>
+      </div>
+      <div className="text-center text-xs text-gray-400 mt-4">
+        &copy; {new Date().getFullYear()} PoultryCare. All rights reserved.
+      </div>
+    </footer>
+
     </div>
   );
 }
