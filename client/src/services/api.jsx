@@ -4,7 +4,7 @@ import toast from "react-hot-toast";
 const API = axios.create({
   baseURL: window.location.hostname === 'localhost' 
     ? 'http://localhost:5000/api'  // Local backend during development
-    : '/api'  // For Vercel production (relative to the deployed app)
+    : 'https://poultry-care.vercel.app/api'  // For Vercel production (relative to the deployed app)
 });
 
 

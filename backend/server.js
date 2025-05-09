@@ -27,7 +27,8 @@ app.use('/api/auth', authRoutes);
 
 
 // Server listen
-const PORT = process.env.PORT;
-app.listen(PORT, () => {
-  console.log(`Server running on http://localhost:${PORT}`);
-});
+// const PORT = process.env.PORT;
+// app.listen(PORT, () => {
+//   console.log(`Server running on http://localhost:${PORT}`);
+// });
+module.exports = app;
