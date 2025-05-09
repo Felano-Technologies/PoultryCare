@@ -2,16 +2,13 @@
     "version": 2,
     "builds": [
       {
-        "src": "api/backend.js",
+        "src": "api/backend.js",  
         "use": "@vercel/node"
       },
       {
         "src": "client/package.json",
         "use": "@vercel/static-build",
-        "config": {
-          "distDir": "client/dist"
-        },
-        "buildCommand": "cd client && npm install && npm run build"
+        "config": { "distDir": "client/dist" }
       }
     ],
     "routes": [
