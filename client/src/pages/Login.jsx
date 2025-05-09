@@ -35,8 +35,6 @@ const Login = () => {
     try {
       const response = await loginUser({ phoneNumber, password });
       toast.success("Login successful!");
-      console.alert(response)
-      console.log(response)
       localStorage.setItem("token", response.token);
       navigate("/dashboard");
     } catch (error) {
