@@ -2,11 +2,9 @@ import axios from "axios";
 import toast from "react-hot-toast";
 
 const API = axios.create({
-  baseURL: window.location.hostname === 'localhost' 
-    ? 'http://localhost:5000/api'  // Local backend during development
-    : 'https://poultry-care.vercel.app/api'  // For Vercel production (relative to the deployed app)
+  // baseURL: "http://localhost:5000/api",
+  // baseURL: "http://172.20.10.2:5000/api",
 });
-
 
 // Automatically attach token if available
 API.interceptors.request.use((config) => {
