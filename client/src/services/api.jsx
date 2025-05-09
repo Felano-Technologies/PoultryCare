@@ -2,8 +2,9 @@ import axios from "axios";
 import toast from "react-hot-toast";
 
 const API = axios.create({
-  baseURL: "http://localhost:5000/api",
+  // baseURL: "http://localhost:5000/api",
   // baseURL: "http://172.20.10.2:5000/api",
+  baseURL: "https://poultry-care-l8tej3jvb-kingsnaturals-projects.vercel.app/api",
 });
 
 // Automatically attach token if available
