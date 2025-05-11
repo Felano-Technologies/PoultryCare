@@ -1,33 +1,32 @@
-import { FaPhotoVideo } from "react-icons/fa";
+import React, { useState } from "react";
 
-const CreatePost = () => {
+const CreatePost = ({ onPost }) => {
+  const [text, setText] = useState("");
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    if (text.trim()) {
+      onPost({ id: Date.now(), author: "You", content: text, comments: [] });
+      setText("");
+    }
+  };
+
   return (
-    <div className="bg-white rounded-xl shadow-sm p-4 mb-6">
-      <div className="flex items-start gap-4">
-        {/* Placeholder profile pic */}
-        <div className="w-10 h-10 rounded-full bg-gray-300 flex-shrink-0"></div>
-
-        <div className="flex-1">
-          <textarea
-            className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
-            rows={3}
-            placeholder="What's on your mind?"
-          ></textarea>
-
-          <div className="flex justify-between items-center mt-3">
-            <label className="flex items-center gap-2 text-blue-600 cursor-pointer">
-              <FaPhotoVideo />
-              <input type="file" className="hidden" />
-              <span className="text-sm font-medium">Add Photo/Video</span>
-            </label>
-
-            <button className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition">
-              Post
-            </button>
-          </div>
-        </div>
-      </div>
-    </div>
+    <form onSubmit={handleSubmit} className="bg-white p-4 rounded-lg shadow">
+      <textarea
+        value={text}
+        onChange={(e) => setText(e.target.value)}
+        placeholder="What's your question or topic?"
+        className="w-full p-2 border rounded resize-none"
+        rows={3}
+      />
+      <button
+        type="submit"
+        className="mt-2 bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
+      >
+        Post Discussion
+      </button>
+    </form>
   );
 };
 

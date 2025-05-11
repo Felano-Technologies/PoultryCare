@@ -51,7 +51,7 @@ const Register = () => {
       });
       if (response.message === "User registered successfully") {
         toast.success("Account created!");
-        navigate("/login");
+        navigate("/farm-setup");
       }
     } catch (error) {
       toast.error(error.response?.data?.message || "Registration failed");

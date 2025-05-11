@@ -11,6 +11,7 @@ import Profile from "./pages/Profile";
 import AI from "./pages/AI";
 import NotFound from "./pages/NotFound";
 import ProtectedRoute from "./components/ProtectedRoute";
+import FarmSetup from "./pages/FarmSetup";
 
 function App() {
   return (
@@ -65,6 +66,14 @@ function App() {
           element={
             <ProtectedRoute>
               <Community />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/farm-setup"
+          element={
+            <ProtectedRoute>
+              <FarmSetup />
             </ProtectedRoute>
           }
         />
