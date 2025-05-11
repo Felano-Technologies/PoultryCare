@@ -13,6 +13,7 @@ const Register = () => {
   const [location, setLocation] = useState("");
   const [experience, setExperience] = useState("");
   const [farmSize, setFarmSize] = useState("");
+  const [loading, setLoading] = useState(false);
 
   const navigate = useNavigate();
   const phoneRegex = /^[0-9]{10,15}$/;
@@ -37,6 +38,7 @@ const Register = () => {
     e.preventDefault();
     if (!validateForm()) return;
 
+    setLoading(true);
     try {
       const response = await registerUser({
         phoneNumber,
@@ -53,6 +55,8 @@ const Register = () => {
       }
     } catch (error) {
       toast.error(error.response?.data?.message || "Registration failed");
+    } finally {
+      setLoading(false); // End loading
     }
   };
 
@@ -167,11 +171,40 @@ const Register = () => {
         {/* Submit Button */}
         <motion.button
           type="submit"
+          disabled={loading}
           whileHover={{ scale: 1.05 }}
           whileTap={{ scale: 0.95 }}
-          className="w-full bg-gradient-to-r from-green-500 to-green-600 text-white py-3 rounded-lg shadow-md hover:from-green-600 hover:to-green-700 transition"
+          className={`w-full flex justify-center items-center gap-2 bg-gradient-to-r from-green-500 to-green-600 text-white py-3 rounded-lg shadow-md transition ${
+            loading ? "opacity-60 cursor-not-allowed" : "hover:from-green-600 hover:to-green-700"
+          }`}
         >
-          Register
+          {loading ? (
+            <>
+              <svg
+                className="animate-spin h-5 w-5 text-white"
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+              >
+                <circle
+                  className="opacity-25"
+                  cx="12"
+                  cy="12"
+                  r="10"
+                  stroke="currentColor"
+                  strokeWidth="4"
+                ></circle>
+                <path
+                  className="opacity-75"
+                  fill="currentColor"
+                  d="M4 12a8 8 0 018-8v8z"
+                ></path>
+              </svg>
+              Registering...
+            </>
+          ) : (
+            "Register"
+          )}
         </motion.button>
 
         <p className="text-center text-sm text-gray-500">

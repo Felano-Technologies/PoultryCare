@@ -8,6 +8,7 @@ import { loginUser } from "../services/api";
 const Login = () => {
   const [phoneNumber, setPhoneNumber] = useState("");
   const [password, setPassword] = useState("");
+  const [loading, setLoading] = useState(false); // <-- Loading state
   const navigate = useNavigate();
 
   const phoneRegex = /^[0-9]{10,15}$/;
@@ -32,6 +33,7 @@ const Login = () => {
     e.preventDefault();
     if (!validatePhoneAndPassword({ phoneNumber, password })) return;
 
+    setLoading(true); // Start loading
     try {
       const response = await loginUser({ phoneNumber, password });
       toast.success("Login successful!");
@@ -39,6 +41,8 @@ const Login = () => {
       navigate("/dashboard");
     } catch (error) {
       toast.error(error.response?.data?.message || "Login failed");
+    } finally {
+      setLoading(false); // Stop loading
     }
   };
 
@@ -75,15 +79,44 @@ const Login = () => {
 
         <motion.button
           type="submit"
-          whileHover={{ scale: 1.05 }}
-          whileTap={{ scale: 0.95 }}
-          className="w-full bg-gradient-to-r from-green-500 to-green-600 text-white py-3 rounded-lg shadow-md hover:from-green-600 hover:to-green-700 transition"
+          disabled={loading}
+          whileHover={{ scale: !loading ? 1.05 : 1 }}
+          whileTap={{ scale: !loading ? 0.95 : 1 }}
+          className={`w-full flex items-center justify-center gap-2 ${
+            loading ? "bg-green-400 cursor-not-allowed" : "bg-gradient-to-r from-green-500 to-green-600"
+          } text-white py-3 rounded-lg shadow-md transition`}
         >
-          Login
+          {loading ? (
+            <>
+              <svg
+                className="animate-spin h-5 w-5 text-white"
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+              >
+                <circle
+                  className="opacity-25"
+                  cx="12"
+                  cy="12"
+                  r="10"
+                  stroke="currentColor"
+                  strokeWidth="4"
+                />
+                <path
+                  className="opacity-75"
+                  fill="currentColor"
+                  d="M4 12a8 8 0 018-8v4l3-3-3-3v4a8 8 0 00-8 8h4z"
+                />
+              </svg>
+              Logging in...
+            </>
+          ) : (
+            "Login"
+          )}
         </motion.button>
 
         <p className="text-center text-sm text-gray-500">
-          Don't have an account?{' '}
+          Don't have an account?{" "}
           <Link to="/register" className="text-green-600 hover:underline">
             Register
           </Link>
