@@ -1,5 +1,4 @@
-// components/VaccinationChart.jsx
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Bar } from 'react-chartjs-2';
 import {
   Chart as ChartJS,
@@ -10,26 +9,37 @@ import {
   Tooltip,
   Legend
 } from 'chart.js';
+import { fetchVaccinationChartData } from '../services/api';
 
 // Register chart components
-ChartJS.register(
-  CategoryScale,
-  LinearScale,
-  BarElement,
-  Title,
-  Tooltip,
-  Legend
-);
+ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
 
 export default function VaccinationChart() {
-  // Mocked data – replace with real backend data later
+  const [chartData, setChartData] = useState(null);
+
+  useEffect(() => {
+    const loadChartData = async () => {
+      try {
+        const data = await fetchVaccinationChartData();
+        setChartData(data);
+      } catch (error) {
+        console.error('Failed to load vaccination chart data');
+      }
+    };
+    loadChartData();
+  }, []);
+
+  if (!chartData) {
+    return <div className="text-sm text-gray-500">Loading chart...</div>;
+  }
+
   const data = {
-    labels: ['Flock A', 'Flock B', 'Flock C', 'Flock D'],
+    labels: chartData.map(item => item.flockName),
     datasets: [
       {
         label: 'Vaccinated Birds (%)',
-        data: [90, 70, 60, 80],
-        backgroundColor: '#22c55e', // Tailwind green-500
+        data: chartData.map(item => item.percentage),
+        backgroundColor: '#22c55e',
         borderRadius: 6
       }
     ]
@@ -38,9 +48,7 @@ export default function VaccinationChart() {
   const options = {
     responsive: true,
     plugins: {
-      legend: {
-        position: 'top'
-      },
+      legend: { position: 'top' },
       title: {
         display: true,
         text: 'Vaccination Coverage per Flock'

@@ -47,4 +47,68 @@ export const fetchUserProfile = async (token) => {
   return response.data;
 };
 
+// --- Flocks ---
+
+// Create/Register a new flock
+export const registerFlock = async (flockData) => {
+  const response = await API.post("/flocks", flockData);
+  return response.data;
+};
+
+// Get all flocks for the logged-in user
+export const fetchFlocks = async () => {
+  const response = await API.get("/flocks");
+  return response.data;
+};
+
+export const fetchFlockStatusCounts = async () => {
+  const response = await API.get('/flocks/chart/status');
+  return response.data; // { active: 200, sold: 50, completed: 10, dead: 5 }
+};
+
+
+export const createVaccination = async (vaccinationData) => {
+  const response = await API.post('/vaccinations', vaccinationData);
+  return response.data;
+};
+
+export const fetchVaccinations = async () => {
+  const response = await API.get('/vaccinations');
+  return response.data;
+};
+
+export const fetchVaccinationStats = async () => {
+  const response = await API.get('/vaccinations/stats');
+  return response.data;
+};
+
+export const fetchVaccinationChartData = async () => {
+  const response = await API.get('/vaccinations/chart');
+  return response.data;
+};
+
+export const fetchNextVaccination = async () => {
+  const response = await API.get('/vaccinations/next');
+  return response.data;
+};
+
+// Fetch flock details by ID
+export const fetchFlockById = async (id) => {
+  const response = await API.get(`/flocks/${id}`);
+  return response.data;
+};
+
+// Log new health record
+export const logFlockHealth = async (id, data) => {
+  const response = await API.post(`/flocks/${id}/health-log`, data);
+  return response.data;
+};
+
+// Log new feed record
+export const logFlockFeed = async (id, data) => {
+  const response = await API.post(`/flocks/${id}/feed-log`, data);
+  return response.data;
+};
+
+
 export default API;

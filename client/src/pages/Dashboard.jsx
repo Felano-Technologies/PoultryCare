@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
 import DashboardCard from '../components/DashboardCard';
@@ -17,11 +17,31 @@ import { Egg, Syringe, Users, AlertTriangle } from 'lucide-react';
 
 import AOS from 'aos';
 import 'aos/dist/aos.css';
+import { fetchFlocks } from '../services/api';
 
 export default function Dashboard() {
-  const totalBirds = 300;
-  const deadBirds = 10;
+
+  const [flocks, setFlocks] = useState([]);
+
+useEffect(() => {
+  const loadFlocks = async () => {
+    try {
+      const data = await fetchFlocks();
+      setFlocks(data);
+    } catch (error) {
+      console.error("Failed to fetch flocks");
+    }
+  };
+
+  loadFlocks();
+}, []);
+  const totalBirds = flocks.reduce((sum, flock) => sum + flock.birdCount, 0);
+  const deadBirds = 0;
   const mortalityRate = ((deadBirds / totalBirds) * 100).toFixed(1) + "%";
+
+  const activeFlocks = flocks.filter(flock => flock.status === 'active');
+  const activeFlockCount = activeFlocks.length;
+
 
   useEffect(() => {
     AOS.init({ duration: 800, once: true });
@@ -40,26 +60,26 @@ export default function Dashboard() {
 
         {/* Overview Cards */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6" data-aos="fade-up">
-          <DashboardCard
-            title="Total Birds"
-            value={totalBirds}
-            icon={<Egg className="w-8 h-8 text-green-500" />}
-          />
-          <DashboardCard
-            title="Upcoming Vaccines"
-            value="4"
-            icon={<Syringe className="w-8 h-8 text-blue-500" />}
-          />
-          <DashboardCard
-            title="Active Flocks"
-            value="5"
-            icon={<Users className="w-8 h-8 text-purple-500" />}
-          />
-          <DashboardCard
-            title="Mortality Rate"
-            value={mortalityRate}
-            icon={<AlertTriangle className="w-8 h-8 text-red-500" />}
-          />
+        <DashboardCard
+          title="Total Birds"
+          value={totalBirds || 0}
+          route="/farm-setup"
+        />
+        <DashboardCard
+          title="Upcoming Vaccines"
+          value="0"
+          route="/vaccinations"
+        />
+        <DashboardCard
+          title="Active Flocks"
+          value={activeFlockCount}
+          route="/farm-setup"
+        />
+        <DashboardCard
+          title="Mortality Rate"
+          value={mortalityRate || '0%'}
+        />
+
         </div>
 
         {/* Info Widgets Section */}

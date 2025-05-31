@@ -12,6 +12,8 @@ import AI from "./pages/AI";
 import NotFound from "./pages/NotFound";
 import ProtectedRoute from "./components/ProtectedRoute";
 import FarmSetup from "./pages/FarmSetup";
+import FlockDetails from "./pages/FlockDetails";
+import Flocks from "./pages/Flocks";
 
 function App() {
   return (
@@ -74,6 +76,22 @@ function App() {
           element={
             <ProtectedRoute>
               <FarmSetup />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/flock-details/:id"
+          element={
+            <ProtectedRoute>
+              <FlockDetails />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/flocks"
+          element={
+            <ProtectedRoute>
+              <Flocks />
             </ProtectedRoute>
           }
         />
