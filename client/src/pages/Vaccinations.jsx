@@ -63,7 +63,6 @@ const [stats, setStats] = useState(null);
     const vaccinationData = {
       flockName,
       breed,
-      flockName,
       age: parseInt(age),
       vaccineName,
       vaccineType,

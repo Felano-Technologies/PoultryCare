@@ -1,16 +1,13 @@
 import React, { useState, useRef, useEffect } from 'react';
-
-
 import {
   PaperClipIcon,
   MicrophoneIcon,
-  PaperAirplaneIcon
+  PaperAirplaneIcon,
+  ArrowLeftIcon
 } from '@heroicons/react/24/outline';
 import SpeechRecognition, { useSpeechRecognition } from 'react-speech-recognition';
 import { useNavigate } from 'react-router-dom';
-import { ArrowLeftIcon } from '@heroicons/react/24/outline';
-import API from '../services/api';
-
+import { askAI, uploadToCloudinary } from '../services/api';
 
 export default function AIAssistant() {
   const [messages, setMessages] = useState([
@@ -21,8 +18,6 @@ export default function AIAssistant() {
   const [loading, setLoading] = useState(false);
   const chatEndRef = useRef(null);
   const navigate = useNavigate();
-
-
   const { transcript, listening, resetTranscript } = useSpeechRecognition();
 
   useEffect(() => {
@@ -54,13 +49,10 @@ export default function AIAssistant() {
       let imageUrl = null;
 
       if (upload) {
-        const formData = new FormData();
-        formData.append('image', upload);
-        const uploadRes = await API.post('ai/upload', formData);
-        imageUrl = `ai/images/${uploadRes.data.filename}`;
+        imageUrl = await uploadToCloudinary(upload);
       }
 
-      const response = await API.post('ai/ask', {
+      const response = await askAI({
         question: userMessage.content,
         image: imageUrl
       });
@@ -68,7 +60,13 @@ export default function AIAssistant() {
       const aiMessage = { role: 'ai', content: response.data.answer };
       setMessages((prev) => [...prev, aiMessage]);
     } catch (error) {
-      setMessages((prev) => [...prev, { role: 'ai', content: '❌ Error: Unable to process your request.' }]);
+      setMessages((prev) => [
+        ...prev,
+        {
+          role: 'ai',
+          content: '❌ Error: Unable to process your request.'
+        }
+      ]);
     } finally {
       setLoading(false);
     }
@@ -83,19 +81,17 @@ export default function AIAssistant() {
 
   return (
     <div className="flex flex-col h-screen bg-gray-100">
-      {/* Sticky Header */}
+      {/* Header */}
       <header className="sticky top-0 z-10 bg-white shadow-md p-4 flex items-center justify-between">
         <button
-          onClick={() => navigate(-1)} // or navigate('/dashboard') for a specific route
+          onClick={() => navigate(-1)}
           className="flex items-center text-green-600 hover:text-green-700 transition"
         >
           <ArrowLeftIcon className="h-5 w-5 mr-1" />
           Back
         </button>
-
         <h1 className="text-xl font-bold text-green-600">Poultry AI Assistant</h1>
       </header>
-
 
       {/* Chat Area */}
       <main className="flex-1 overflow-y-auto px-4 py-6 space-y-4">
@@ -118,7 +114,6 @@ export default function AIAssistant() {
             <div>{msg.content}</div>
           </div>
         ))}
-
         {loading && (
           <div className="mr-auto bg-white text-gray-800 px-4 py-3 rounded-xl shadow-sm">
             Thinking...
@@ -127,7 +122,7 @@ export default function AIAssistant() {
         <div ref={chatEndRef} />
       </main>
 
-      {/* Footer: Input Area */}
+      {/* Input Footer */}
       <footer className="bg-white p-4 shadow-inner">
         <div className="flex items-end gap-2">
           {/* Upload Icon */}
@@ -137,11 +132,11 @@ export default function AIAssistant() {
               type="file"
               accept="image/*"
               className="hidden"
-              onChange={(e) => setUpload(e.target.files[0])}
+              onChange={(e) => setUpload(e.target.files?.[0] || null)}
             />
           </label>
 
-          {/* Microphone Icon */}
+          {/* Mic Icon */}
           <button
             type="button"
             onClick={() =>
@@ -157,7 +152,7 @@ export default function AIAssistant() {
             <MicrophoneIcon className="h-5 w-5 text-green-600" />
           </button>
 
-          {/* Expandable Textarea */}
+          {/* Text Input */}
           <textarea
             value={input}
             onChange={(e) => setInput(e.target.value)}
@@ -165,10 +160,6 @@ export default function AIAssistant() {
             rows={1}
             className="flex-1 p-2 border border-gray-300 rounded-lg resize-none focus:outline-none focus:ring-green-500 max-h-40 overflow-auto"
             placeholder="Type your message..."
-            style={{
-              lineHeight: '1.5',
-              overflowY: 'auto'
-            }}
           />
 
           {/* Send Button */}

@@ -111,4 +111,29 @@ export const logFlockFeed = async (id, data) => {
 };
 
 
+// Upload image to backend (Cloudinary)
+export const uploadToCloudinary = async (file) => {
+  const formData = new FormData();
+  formData.append("image", file);
+
+  const res = await API.post("/ai/upload", formData, {
+    headers: {
+      "Content-Type": "multipart/form-data",
+    },
+  });
+
+  return res.data.imageUrl; // Returns the Cloudinary URL
+};
+
+// Ask the AI assistant (with optional image)
+export const askAI = async ({ question, image }) => {
+  const res = await API.post("/ai/ask", {
+    question,
+    image, // this should be the URL from Cloudinary
+  });
+  return res.data;
+};
+
+
+
 export default API;
