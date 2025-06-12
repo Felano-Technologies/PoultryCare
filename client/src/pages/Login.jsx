@@ -115,12 +115,22 @@ const Login = () => {
           )}
         </motion.button>
 
-        <p className="text-center text-sm text-gray-500">
-          Don't have an account?{" "}
-          <Link to="/register" className="text-green-600 hover:underline">
-            Register
-          </Link>
-        </p>
+        <div className="text-center text-sm text-gray-500 space-y-2">
+          <p>
+            <Link 
+              to="/forgot-password" 
+              className="text-green-600 hover:underline"
+            >
+              Forgot Password?
+            </Link>
+          </p>
+          <p>
+            Don't have an account?{" "}
+            <Link to="/register" className="text-green-600 hover:underline">
+              Register
+            </Link>
+          </p>
+        </div>
       </motion.form>
     </AuthLayout>
   );

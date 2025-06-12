@@ -1,11 +1,12 @@
 import Flock from '../models/Flock.js';
 
 export const createFlock = async (req, res) => {
-  const { flockName, breed, birdCount, acquiredAt, notes } = req.body;
+  const { flockName, type, breed, birdCount, acquiredAt, notes } = req.body;
 
   try {
     const newFlock = new Flock({
       flockName,
+      type,
       breed,
       birdCount,
       acquiredAt,

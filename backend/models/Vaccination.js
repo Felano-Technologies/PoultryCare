@@ -2,6 +2,7 @@ import mongoose from 'mongoose';
 
 const vaccinationSchema = new mongoose.Schema({
   flockName: String,
+  type: String,
   breed: String,
   flockName: String,
   age: Number,
@@ -22,9 +23,6 @@ const vaccinationSchema = new mongoose.Schema({
   postReactions: String,
   nextVaccinationDate: Date,
 
-  storageTemp: String,
-  equipmentUsed: String,
-  sanitizationStatus: String,
 
   farm: {
     type: mongoose.Schema.Types.ObjectId,

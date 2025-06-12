@@ -5,6 +5,10 @@ const flockSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
+  type: {
+    type: String,
+    required: true,
+  },
   breed: {
     type: String,
     required: true,

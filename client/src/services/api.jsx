@@ -2,9 +2,9 @@ import axios from "axios";
 import toast from "react-hot-toast";
 
 const API = axios.create({
-  // baseURL: "http://localhost:5000/api",
+  baseURL: "http://localhost:5000/api",
   // baseURL: "http://172.20.10.2:5000/api",
-  baseURL: "https://poultrycare.onrender.com/api",
+  // baseURL: "https://poultrycare.onrender.com/api",
 });
 
 // Automatically attach token if available
@@ -44,6 +44,23 @@ export const fetchUserProfile = async (token) => {
       Authorization: `Bearer ${token}`,
     },
   });
+  return response.data;
+};
+
+/// api.tsx
+// --- Password Reset ---
+export const sendOTP = async (email) => {
+  const response = await API.post("/auth/forgot-password", { email });
+  return response.data;
+};
+
+export const verifyOTP = async (email, otp) => {
+  const response = await API.post("/auth/verify-reset-otp", { email, otp });
+  return response.data;
+};
+
+export const resetPassword = async (email, newPassword) => {
+  const response = await API.post("/auth/reset-password", { email, newPassword });
   return response.data;
 };
 
@@ -129,7 +146,7 @@ export const uploadToCloudinary = async (file) => {
 export const askAI = async ({ question, image }) => {
   const res = await API.post("/ai/ask", {
     question,
-    image, // this should be the URL from Cloudinary
+    image, 
   });
   return res.data;
 };

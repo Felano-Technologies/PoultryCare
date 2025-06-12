@@ -8,6 +8,9 @@ import {
 import SpeechRecognition, { useSpeechRecognition } from 'react-speech-recognition';
 import { useNavigate } from 'react-router-dom';
 import { askAI, uploadToCloudinary } from '../services/api';
+import { marked } from 'marked';
+import DOMPurify from 'dompurify';
+
 
 export default function AIAssistant() {
   const [messages, setMessages] = useState([
@@ -57,7 +60,7 @@ export default function AIAssistant() {
         image: imageUrl
       });
 
-      const aiMessage = { role: 'ai', content: response.data.answer };
+      const aiMessage = { role: 'ai', content: response.answer };
       setMessages((prev) => [...prev, aiMessage]);
     } catch (error) {
       setMessages((prev) => [
@@ -78,6 +81,12 @@ export default function AIAssistant() {
       handleSend();
     }
   };
+
+  const renderMarkdown = (text) => {
+    const rawHTML = marked.parse(text || '');
+    return DOMPurify.sanitize(rawHTML);
+  };
+  
 
   return (
     <div className="flex flex-col h-screen bg-gray-100">
@@ -111,7 +120,12 @@ export default function AIAssistant() {
                 className="w-40 h-auto mb-2 rounded border"
               />
             )}
-            <div>{msg.content}</div>
+            <div
+              dangerouslySetInnerHTML={{
+                __html: msg.role === 'ai' ? renderMarkdown(msg.content) : msg.content
+              }}
+            />
+
           </div>
         ))}
         {loading && (

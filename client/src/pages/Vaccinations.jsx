@@ -10,6 +10,7 @@ export default function Vaccination() {
   const [showModal, setShowModal] = useState(false);
   const [flockName, setFlockName] = useState('');
   const [age, setAge] = useState('');
+  const [type, setType] = useState('');
   const [breed, setBreed] = useState('');
   
   const [vaccineName, setVaccineName] = useState('');
@@ -27,10 +28,7 @@ export default function Vaccination() {
   const [preHealthCheck, setPreHealthCheck] = useState('');
   const [postReactions, setPostReactions] = useState('');
   const [nextVaccinationDate, setNextVaccinationDate] = useState('');
-  
-  const [storageTemp, setStorageTemp] = useState('');
-  const [equipmentUsed, setEquipmentUsed] = useState('');
-  const [sanitizationStatus, setSanitizationStatus] = useState('');
+
   const [vaccinations, setVaccinations] = useState([]);
   
 const [stats, setStats] = useState(null);
@@ -62,6 +60,7 @@ const [stats, setStats] = useState(null);
     setLoading(true);
     const vaccinationData = {
       flockName,
+      type,
       breed,
       age: parseInt(age),
       vaccineName,
@@ -77,9 +76,6 @@ const [stats, setStats] = useState(null);
       preHealthCheck,
       postReactions,
       nextVaccinationDate,
-      storageTemp,
-      equipmentUsed,
-      sanitizationStatus
     };
   
     try {
@@ -140,6 +136,7 @@ const [stats, setStats] = useState(null);
             <thead className="bg-green-100 text-green-700 uppercase">
               <tr>
                 <th className="px-4 py-3">Flock</th>
+                <th className="px-4 py-3">Type</th>
                 <th className="px-4 py-3">Breed</th>
                 <th className="px-4 py-3">Vaccine</th>
                 <th className="px-4 py-3">Date</th>
@@ -151,6 +148,7 @@ const [stats, setStats] = useState(null);
               {vaccinations.map((vax, i) => (
                 <tr key={i} className="border-b">
                   <td className="px-4 py-2">{vax.flockName || '-'}</td>
+                  <td className="px-4 py-2">{vax.type || '-'}</td>
                   <td className="px-4 py-2">{vax.breed || '-'}</td>
                   <td className="px-4 py-2">{vax.vaccineName || '-'}</td>
                   <td className="px-4 py-2">{vax.dateTime?.slice(0, 10)}</td>
@@ -193,6 +191,7 @@ const [stats, setStats] = useState(null);
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <input type="text" value={flockName} onChange={(e) => setFlockName(e.target.value)} placeholder="Flock Name" className="border px-3 py-2 rounded" required />
             <input type="number" value={age} onChange={(e) => setAge(e.target.value)} placeholder="Age (days)" className="border px-3 py-2 rounded" required />
+            <input type="text" value={type} onChange={(e) => setType(e.target.value)} placeholder="Type" className="border px-3 py-2 rounded" required />
             <input type="text" value={breed} onChange={(e) => setBreed(e.target.value)} placeholder="Breed" className="border px-3 py-2 rounded" required />
           </div>
         </div>
@@ -231,15 +230,6 @@ const [stats, setStats] = useState(null);
           </div>
         </div>
 
-        {/* 5. Storage & Equipment */}
-        <div>
-          <h3 className="text-lg font-semibold text-gray-700 mb-2">Storage & Equipment</h3>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <input type="text" value={storageTemp} onChange={(e) => setStorageTemp(e.target.value)} placeholder="Storage Temp (°C)" className="border px-3 py-2 rounded" />
-            <input type="text" value={equipmentUsed} onChange={(e) => setEquipmentUsed(e.target.value)} placeholder="Equipment Used" className="border px-3 py-2 rounded" />
-            <input type="text" value={sanitizationStatus} onChange={(e) => setSanitizationStatus(e.target.value)} placeholder="Sanitization Status" className="border px-3 py-2 rounded" />
-          </div>
-        </div>
 
         {/* Submit */}
         <div className="pt-4">

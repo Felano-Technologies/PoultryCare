@@ -9,6 +9,7 @@ import { useNavigate } from 'react-router-dom';
 export default function FarmSetup() {
   const [flockName, setFlockName] = useState('');
   const [breed, setBreed] = useState('');
+  const [type, setType] = useState('');
   const [birdCount, setBirdCount] = useState('');
   const [acquiredAt, setAcquiredAt] = useState('');
   const [notes, setNotes] = useState('');
@@ -20,6 +21,7 @@ export default function FarmSetup() {
 
     const flockData = {
       flockName,
+      type,
       breed,
       birdCount: parseInt(birdCount),
       acquiredAt,
@@ -33,6 +35,7 @@ export default function FarmSetup() {
       toast.success('Flock registered successfully');
       setFlockName('');
       setBreed('');
+      setType('');
       setBirdCount('');
       setAcquiredAt('');
       setNotes('');
@@ -67,7 +70,18 @@ export default function FarmSetup() {
         <div className="relative">
           <input
             type="text"
-            placeholder="Breed (e.g. Broiler)"
+            placeholder="Type (e.g. Broiler)"
+            className="w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-green-500 bg-white"
+            value={type}
+            onChange={(e) => setType(e.target.value)}
+            required
+          />
+        </div>
+
+        <div className="relative">
+          <input
+            type="text"
+            placeholder="Breed (e.g. Leghorn)"
             className="w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-green-500 bg-white"
             value={breed}
             onChange={(e) => setBreed(e.target.value)}

@@ -1,28 +1,46 @@
-import OpenAI from 'openai';
+import { GoogleGenerativeAI } from '@google/generative-ai';
+import AIMessage from '../models/AI.js';
 
-const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY
-});
+const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
 
-
-export const handleAIQuestion = async (req, res) => {
-  const { question, image } = req.body;
-
+export const askGemini = async (req, res) => {
   try {
-    const messages = [
-      { role: 'system', content: 'You are a poultry health assistant. Give accurate answers.' },
-      { role: 'user', content: question }
-    ];
+    const { question, image } = req.body;
 
-    const completion = await openai.chat.completions.create({
-      model: 'gpt-3.5-turbo',
-      messages
+    await AIMessage.create({
+      role: 'user',
+      content: question,
+      image: image || null,
     });
 
-    const answer = completion.choices[0]?.message?.content || 'Sorry, I couldn’t find an answer.';
-    return res.json({ answer });
+    const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash-latest",
+    generationConfig: {
+      temperature: 0.7 
+    } });
+
+    const prompt = `
+    You are a professional poultry health and management expert.
+    Respond clearly and concisely to technical questions related to chickens, including health, feeding, environment, diseases, and productivity.
+    Use formal language and avoid conversational or informal tone. Do not use greetings or personal anecdotes.
+    Always provide accurate, practical, and focused information.
+    ${image ? `An image has been provided: ${image}` : ''}
+    Question: ${question}
+    `.trim();
+    
+    
+
+    const result = await model.generateContent(prompt);
+    const response = await result.response;
+    const text = response.text();
+
+    await AIMessage.create({
+      role: 'ai',
+      content: text,
+    });
+
+    res.json({ answer: text });
   } catch (err) {
-    console.error(err);
-    return res.status(500).json({ error: 'AI failed to respond' });
+    console.error('Gemini error:', err.message);
+    res.status(500).json({ error: 'Failed to get AI response.' });
   }
 };

@@ -1,3 +1,4 @@
 node_modules
 
 .env
+./config/poultrycare-57ca6-firebase-adminsdk-fbsvc-bf8e0fdf8f.json

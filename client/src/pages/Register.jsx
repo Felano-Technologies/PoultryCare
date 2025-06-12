@@ -9,6 +9,7 @@ const Register = () => {
   const [phoneNumber, setPhoneNumber] = useState("");
   const [password, setPassword] = useState("");
   const [farmName, setFarmName] = useState("");
+  const [email, setEmail] = useState("");
   const [role, setRole] = useState("");
   const [location, setLocation] = useState("");
   const [experience, setExperience] = useState("");
@@ -19,7 +20,7 @@ const Register = () => {
   const phoneRegex = /^[0-9]{10,15}$/;
 
   const validateForm = () => {
-    if (!phoneNumber || !password || !farmName || !role || !location || !experience || (role === "Poultry Farmer" && !farmSize)) {
+    if (!phoneNumber || !email || !password || !farmName || !role || !location || !experience || (role === "Poultry Farmer" && !farmSize)) {
       toast.error("Please fill in all required fields");
       return false;
     }
@@ -42,6 +43,7 @@ const Register = () => {
     try {
       const response = await registerUser({
         phoneNumber,
+        email,
         password,
         farmName,
         role,
@@ -93,6 +95,18 @@ const Register = () => {
           />
         </div>
 
+        {/* Email Address */}
+        <div className="relative">
+          <input
+            type="email"
+            placeholder="Email Address"
+            className="w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-green-500 bg-white"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            required
+          />
+        </div>
+
         {/* Password */}
         <div className="relative">
           <input
@@ -129,9 +143,23 @@ const Register = () => {
             onChange={(e) => setLocation(e.target.value)}
             required
           >
-            <option value="">Select your Location</option>
-            <option value="Urban area">Urban Area</option>
-            <option value="Rural area">Rural Area</option>
+            <option value="">Select your Region</option>
+            <option value="Ahafo">Ahafo</option>
+            <option value="Ashanti">Ashanti</option>
+            <option value="Bono">Bono</option>
+            <option value="Bono East">Bono East</option>
+            <option value="Central">Central</option>
+            <option value="Eastern">Eastern</option>
+            <option value="Greater Accra">Greater Accra</option>
+            <option value="North East">North East</option>
+            <option value="Northern">Northern</option>
+            <option value="Oti">Oti</option>
+            <option value="Savannah">Savannah</option>
+            <option value="Upper East">Upper East</option>
+            <option value="Upper West">Upper West</option>
+            <option value="Volta">Volta</option>
+            <option value="Western">Western</option>
+            <option value="Western North">Western North</option>
           </select>
         </div>
 

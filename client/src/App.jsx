@@ -14,6 +14,8 @@ import ProtectedRoute from "./components/ProtectedRoute";
 import FarmSetup from "./pages/FarmSetup";
 import FlockDetails from "./pages/FlockDetails";
 import Flocks from "./pages/Flocks";
+import Biosecurity from "./pages/Biosecurity";
+import ForgotPassword from "./pages/ForgotPassword";
 
 function App() {
   return (
@@ -22,6 +24,7 @@ function App() {
         <Route path="/" element={<LandPage />} />
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
+        <Route path="/forgot-password" element={<ForgotPassword />} />
 
         <Route
           path="/dashboard"
@@ -92,6 +95,14 @@ function App() {
           element={
             <ProtectedRoute>
               <Flocks />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/biosecurity"
+          element={
+            <ProtectedRoute>
+              <Biosecurity />
             </ProtectedRoute>
           }
         />
