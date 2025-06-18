@@ -22,6 +22,7 @@ import { fetchFlocks } from '../services/api';
 export default function Dashboard() {
 
   const [flocks, setFlocks] = useState([]);
+  const [weatherData, setWeatherData] = useState(null);
 
 useEffect(() => {
   const loadFlocks = async () => {
@@ -85,7 +86,7 @@ useEffect(() => {
         {/* Info Widgets Section */}
         <h2 className="text-xl font-semibold text-gray-700 mt-4">Quick Insights</h2>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          <WeatherWidget data-aos="fade-right" />
+          <WeatherWidget data-aos="fade-right" onWeatherUpdate={setWeatherData} />
           <NextVaccinationCard data-aos="fade-right" />
           <FarmStats data-aos="fade-right" />
         </div>
@@ -106,7 +107,7 @@ useEffect(() => {
                 <ChicksPieChart />
               </div>
               <div data-aos="fade-up" data-aos-delay="150">
-                <TempHumidityChart />
+                <TempHumidityChart weatherData={weatherData} />
               </div>
             </div>
 

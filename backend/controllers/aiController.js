@@ -13,22 +13,32 @@ export const askGemini = async (req, res) => {
       image: image || null,
     });
 
-    const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash-latest",
-    generationConfig: {
-      temperature: 0.7 
-    } });
+    const model = genAI.getGenerativeModel({ 
+      model: "gemini-1.5-flash-latest",
+      generationConfig: {
+        temperature: 0.8, // Slightly higher for more varied phrasing
+        topP: 0.9, // Allows for more diverse word choices
+        maxOutputTokens: 1000 // Ensures complete responses
+      } 
+    });
 
     const prompt = `
-    You are a professional poultry health and management expert.
-    Respond clearly and concisely to technical questions related to chickens, including health, feeding, environment, diseases, and productivity.
-    Use formal language and avoid conversational or informal tone. Do not use greetings or personal anecdotes.
-    Always provide accurate, practical, and focused information.
+    You are a practical poultry health advisor speaking to farmers. Provide clear, actionable advice in a professional but accessible tone.
+
+    Guidelines for your response:
+    1. Start directly with the answer - no greetings or introductions
+    2. Use bullet points or numbered lists for clear organization
+    3. Prioritize common causes first
+    4. Include practical immediate action steps
+    5. Keep technical terms to a minimum, explain when necessary
+    6. Emphasize quick interventions and when to seek professional help
+    7. Maintain a helpful, solution-oriented tone
+
     ${image ? `An image has been provided: ${image}` : ''}
+    
     Question: ${question}
     `.trim();
     
-    
-
     const result = await model.generateContent(prompt);
     const response = await result.response;
     const text = response.text();

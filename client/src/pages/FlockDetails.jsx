@@ -169,6 +169,7 @@ function HealthLogModal({ open, onClose, onSubmit }) {
             <option value="sick">Sick</option>
             <option value="dead">Dead</option>
             <option value="healthy">Healthy</option>
+            <option value="sold">Sold</option>
           </select>
           <input
             type="number"

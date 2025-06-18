@@ -11,13 +11,17 @@ import {
 // Register the pie chart elements
 ChartJS.register(ArcElement, Tooltip, Legend);
 
-export default function TempHumidityChart() {
+export default function TempHumidityChart({ weatherData }) {
+
+  const temp = weatherData?.temperature;
+  const humidity = weatherData?.humidity;
+
   const data = {
     labels: ['Temperature (°C)', 'Humidity (%)'],
     datasets: [
       {
         label: 'Environmental Data',
-        data: [28, 65], // Example values, replace with real-time data if needed
+        data: [temp, humidity], // Example values, replace with real-time data if needed
         backgroundColor: ['#f97316', '#3b82f6'], // Orange for Temp, Blue for Humidity
         hoverBackgroundColor: ['#fb923c', '#60a5fa'],
         borderWidth: 1,

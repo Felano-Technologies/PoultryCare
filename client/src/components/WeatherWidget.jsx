@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 
-export default function WeatherWidget() {
+export default function WeatherWidget({ onWeatherUpdate }) {
   const [weather, setWeather] = useState(null);
   const API_KEY = '6c3636426670082da68407080a4f9543'; 
   const city = 'Kumasi'; 
@@ -15,8 +15,13 @@ export default function WeatherWidget() {
         const data = res.data;
         setWeather({
           temperature: data.main.temp,
+          humidity: data.main.humidity,
           condition: data.weather[0].main,
           icon: data.weather[0].icon
+        });
+        if (onWeatherUpdate) onWeatherUpdate({
+          temperature: data.main.temp,
+          humidity: data.main.humidity,
         });
       } catch (error) {
         console.error('Weather API error:', error);
@@ -42,7 +47,9 @@ export default function WeatherWidget() {
         className="w-20 h-20 mb-2"
       />
       <p className="text-xl font-bold text-gray-800">{weather.temperature}°C</p>
+      <p className="text-gray-600">{weather.humidity}% Humidity</p>
       <p className="text-gray-600">{weather.condition}</p>
     </div>
   );
+
 }

@@ -80,7 +80,17 @@ export const fetchFlocks = async () => {
 
 export const fetchFlockStatusCounts = async () => {
   const response = await API.get('/flocks/chart/status');
-  return response.data; // { active: 200, sold: 50, completed: 10, dead: 5 }
+  return response.data; 
+};
+
+export const fetchFlockFeedCounts = async () => {
+  const response = await API.get('/flocks/feed/status');
+  return response.data; 
+};
+
+export const fetchFarmStats = async () => {
+  const response = await API.get('/flocks/farm/stats');
+  return response.data; 
 };
 
 
@@ -149,6 +159,30 @@ export const askAI = async ({ question, image }) => {
     image, 
   });
   return res.data;
+};
+
+
+
+// Activity Log API
+export const getRecentActivities = async () => {
+  const response = await API.get('/activities');
+  return response.data;
+};
+
+export const logActivity = async (activityData) => {
+  const response = await API.post('/activities', activityData);
+  return response.data;
+};
+
+// Notifications API
+export const getNotifications = async () => {
+  const response = await API.get('/notifications');
+  return response.data;
+};
+
+export const markNotificationAsRead = async (id) => {
+  const response = await API.patch(`/notifications/${id}/read`);
+  return response.data;
 };
 
 

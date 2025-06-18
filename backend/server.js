@@ -5,7 +5,8 @@ import authRoutes from './routes/authRoutes.js';
 import flockRoutes from './routes/flockRoutes.js'
 import vaccinationRoutes from './routes/vaccinationRoutes.js'
 import aiRoutes from './routes/aiRoutes.js'
-// import communityRoutes from './routes/communityRoutes.js'
+import notificationRoutes from './routes/notificationRoutes.js'
+import activityRoutes from './routes/activityRoutes.js'
 import connectDB from './config/db.js';
 
 // dotenv.config();
@@ -23,7 +24,8 @@ app.use('/api/auth', authRoutes);
 app.use('/api/flocks', flockRoutes);
 app.use('/api/vaccinations', vaccinationRoutes);
 app.use('/api/ai', aiRoutes);
-// app.use('/api/pedigree', pedigreeRoutes);
+app.use('/api/notifications', notificationRoutes);
+app.use('/api/activities', activityRoutes);
 
 
 // Server listen

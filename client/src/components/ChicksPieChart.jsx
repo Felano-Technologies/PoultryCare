@@ -41,10 +41,10 @@ export default function ChicksPieChart() {
       {
         label: 'Number of Chicks',
         data: [
-          statusCounts.active || 0,
-          statusCounts.sold || 0,
-          statusCounts.completed || 0,
-          statusCounts.dead || 0
+          statusCounts.healthy,
+          statusCounts.sick,
+          statusCounts.dead,
+          statusCounts.sold
         ], 
         backgroundColor: [
           '#22c55e', // green-500 (healthy)
