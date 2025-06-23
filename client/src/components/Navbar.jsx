@@ -85,7 +85,7 @@ export default function Navbar() {
       <Link to="/ai-assistant" className="text-gray-700 hover:text-green-600 transition">AI Assistant</Link>
         <Link to="/vaccinations" className="text-gray-700 hover:text-green-600 transition">Vaccination</Link>
         <Link to="/flocks" className="text-gray-700 hover:text-green-600 transition">Manage Flock</Link>
-        <Link to="/pedigree" className="text-gray-700 hover:text-green-600 transition">Pedigree Tracking</Link>
+        {/* <Link to="/pedigree" className="text-gray-700 hover:text-green-600 transition">Pedigree Tracking</Link> */}
         <Link to="/community" className="text-gray-700 hover:text-green-600 transition">Community Forum</Link>
         <Link to="/biosecurity" className="text-gray-700 hover:text-green-600 transition">Biosecurity</Link>
       </div>
@@ -128,7 +128,7 @@ export default function Navbar() {
           <Link to="/ai-assistant" onClick={toggleMenu} className="text-gray-700 hover:text-green-600 transition">AI Assistant</Link>
             <Link to="/vaccinations" onClick={toggleMenu} className="text-gray-700 hover:text-green-600 transition">Vaccination</Link>
             <Link to="/flocks" onClick={toggleMenu} className="text-gray-700 hover:text-green-600 transition">Manage Flock</Link>
-            <Link to="/pedigree" onClick={toggleMenu} className="text-gray-700 hover:text-green-600 transition">Pedigree Tracking</Link>
+            {/* <Link to="/pedigree" onClick={toggleMenu} className="text-gray-700 hover:text-green-600 transition">Pedigree Tracking</Link> */}
             <Link to="/community" onClick={toggleMenu} className="text-gray-700 hover:text-green-600 transition">Community Forum</Link>
             <Link to="/biosecurity" onClick={toggleMenu} className="text-gray-700 hover:text-green-600 transition">Biosecurity</Link>
             <Link to="/profile" onClick={toggleMenu} className="text-gray-700 hover:text-green-600 transition">Profile</Link>

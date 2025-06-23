@@ -161,6 +161,11 @@ export const askAI = async ({ question, image }) => {
   return res.data;
 };
 
+export const fetchMessages = async (page = 1, limit = 20) => {
+  const response = await API.get(`/ai/messages?page=${page}&limit=${limit}`);
+  return response.data;
+};
+
 
 
 // Activity Log API
