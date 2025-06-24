@@ -283,3 +283,60 @@ export const resetUserPassword = async (req, res) => {
 function generateOTP() {
   return Math.floor(100000 + Math.random() * 900000).toString();
 }
+
+export const updateUserProfile = async (req, res) => {
+  const updates = Object.keys(req.body);
+  const allowedUpdates = [
+    'farmName',
+    'location',
+    'farmSize',
+    'experience',
+    'phoneNumber',
+    'primaryPoultry',
+    'operationScale',
+    'certifications'
+  ];
+  
+  // Validate updates
+  const isValidOperation = updates.every(update => 
+    allowedUpdates.includes(update)
+  );
+
+  if (!isValidOperation) {
+    return res.status(400).send({ 
+      error: 'Invalid updates!',
+      allowedFields: allowedUpdates 
+    });
+  }
+
+  try {
+    // Apply updates
+    updates.forEach(update => req.user[update] = req.body[update]);
+    
+    // Save updated user
+    const updatedUser = await req.user.save();
+    
+    // Return updated profile (without sensitive data)
+    const userProfile = {
+      _id: updatedUser._id,
+      farmName: updatedUser.farmName,
+      role: updatedUser.role,
+      location: updatedUser.location,
+      farmSize: updatedUser.farmSize,
+      experience: updatedUser.experience,
+      phoneNumber: updatedUser.phoneNumber,
+      primaryPoultry: updatedUser.primaryPoultry,
+      operationScale: updatedUser.operationScale,
+      certifications: updatedUser.certifications,
+      createdAt: updatedUser.createdAt
+    };
+
+    res.send(userProfile);
+  } catch (error) {
+    console.error('Profile update failed:', error);
+    res.status(400).send({
+      error: 'Profile update failed',
+      details: error.message
+    });
+  }
+};

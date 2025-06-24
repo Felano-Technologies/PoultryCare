@@ -1,11 +1,20 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { fetchUserProfile } from '../services/api';
+import { 
+  ChevronDown, 
+  User, 
+  Settings, 
+  HelpCircle, 
+  LogOut,
+  Menu,
+  X
+} from 'lucide-react';
 
 export default function Navbar() {
-  const [menuOpen, setMenuOpen] = useState(false);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [profileDropdownOpen, setProfileDropdownOpen] = useState(false);
   const [user, setUser] = useState(null);
-  const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -26,10 +35,6 @@ export default function Navbar() {
     }
   }, [navigate]);
 
-  const toggleMenu = () => {
-    setMenuOpen(!menuOpen);
-  };
-
   const handleLogout = () => {
     localStorage.removeItem("token");
     navigate("/login");
@@ -45,97 +50,194 @@ export default function Navbar() {
       .slice(0, 2);
   };
 
+  const navLinks = [
+    { path: "/dashboard", label: "Home" },
+    { path: "/ai-assistant", label: "AI Assistant" },
+    { path: "/vaccinations", label: "Vaccination" },
+    { path: "/flocks", label: "Manage Flock" },
+    { path: "/community", label: "Community Forum" },
+    { path: "/biosecurity", label: "Biosecurity" }
+  ];
+
   return (
-    <nav className="bg-white shadow-md p-4 flex items-center justify-between relative">
-      {/* Logout Confirmation Modal */}
-      {showLogoutConfirm && (
-        <div className="fixed inset-0 bg-black/20 flex items-center justify-center z-50">
-          <div className="bg-white p-6 rounded-xl shadow-2xl transform transition-all duration-300 scale-95 hover:scale-100 text-center space-y-6">
-            <h2 className="text-xl font-semibold text-gray-800">Confirm Logout</h2>
-            <p className="text-gray-600">Are you sure you want to logout?</p>
-            <div className="flex justify-center space-x-4">
-              <button 
-                onClick={() => { setShowLogoutConfirm(false); handleLogout(); }} 
-                className="px-5 py-2 bg-red-500 text-white rounded-full hover:bg-red-600 transition">
-                Yes, Logout
+    <nav className="bg-white shadow-sm sticky top-0 z-50">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="flex justify-between h-16">
+          {/* Logo and Mobile Menu Button */}
+          <div className="flex items-center">
+            <Link to="/dashboard" className="flex-shrink-0 flex items-center">
+              <img 
+                src="/logo.png" 
+                alt="PoultryCare Logo" 
+                className="h-8 w-8 object-cover"
+              />
+              <span className="ml-2 text-xl font-bold text-green-600 hidden md:block">
+                PoultryCare
+              </span>
+            </Link>
+          </div>
+
+          {/* Desktop Navigation */}
+          <div className="hidden md:ml-6 md:flex md:items-center md:space-x-8">
+            {navLinks.map((link) => (
+              <Link
+                key={link.path}
+                to={link.path}
+                className="text-gray-700 hover:text-green-600 px-3 py-2 text-sm font-medium transition-colors"
+              >
+                {link.label}
+              </Link>
+            ))}
+          </div>
+
+          {/* Profile Dropdown */}
+          {user && (
+            <div className="hidden md:ml-4 md:flex md:items-center relative">
+              <button
+                onClick={() => setProfileDropdownOpen(!profileDropdownOpen)}
+                className="flex items-center space-x-2 focus:outline-none"
+              >
+                <div className="bg-green-500 text-white w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold">
+                  {getInitials(user.farmName)}
+                </div>
+                <span className="text-gray-700 font-medium text-sm">
+                  {user.farmName}
+                </span>
+                <ChevronDown 
+                  className={`h-4 w-4 text-gray-500 transition-transform ${
+                    profileDropdownOpen ? 'transform rotate-180' : ''
+                  }`}
+                />
               </button>
-              <button 
-                onClick={() => setShowLogoutConfirm(false)} 
-                className="px-5 py-2 bg-gray-300 text-gray-700 rounded-full hover:bg-gray-400 transition">
-                Cancel
-              </button>
+
+              {/* Dropdown Menu */}
+              {profileDropdownOpen && (
+                <div className="absolute right-0 top-9 mt-2 w-48 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 focus:outline-none">
+                  <div className="py-1">
+                    <Link
+                      to="/profile"
+                      className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                      onClick={() => setProfileDropdownOpen(false)}
+                    >
+                      <User className="mr-2 h-4 w-4" />
+                      Profile
+                    </Link>
+                    <Link
+                      to="/settings"
+                      className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                      onClick={() => setProfileDropdownOpen(false)}
+                    >
+                      <Settings className="mr-2 h-4 w-4" />
+                      Settings
+                    </Link>
+                    <Link
+                      to="/support"
+                      className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                      onClick={() => setProfileDropdownOpen(false)}
+                    >
+                      <HelpCircle className="mr-2 h-4 w-4" />
+                      Support
+                    </Link>
+                    <button
+                      onClick={() => {
+                        setProfileDropdownOpen(false);
+                        handleLogout();
+                      }}
+                      className="w-full text-left flex items-center px-4 py-2 text-sm text-red-600 hover:bg-gray-100"
+                    >
+                      <LogOut className="mr-2 h-4 w-4" />
+                      Logout
+                    </button>
+                  </div>
+                </div>
+              )}
             </div>
+          )}
+
+          {/* Mobile Menu Button */}
+          <div className="-mr-2 flex items-center md:hidden">
+            <button
+              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+              className="inline-flex items-center justify-center p-2 rounded-md text-gray-400 hover:text-gray-500 hover:bg-gray-100 focus:outline-none"
+            >
+              <span className="sr-only">Open main menu</span>
+              {mobileMenuOpen ? (
+                <X className="block h-6 w-6" />
+              ) : (
+                <Menu className="block h-6 w-6" />
+              )}
+            </button>
           </div>
         </div>
-      )}
-
-      {/* Logo */}
-      <div className="flex items-center space-x-4">
-        <Link to="/dashboard" className="flex items-center space-x-2">
-          <img src="/logo.png" alt="PoultryCare Logo" className="h-8 w-8 object-cover" />
-          <span className="text-xl font-bold text-green-600 hidden md:block">
-            PoultryCare
-          </span>
-        </Link>
       </div>
 
-      {/* Desktop Menu */}
-      <div className="hidden md:flex space-x-6">
-      <Link to="/dashboard" className="text-gray-700 hover:text-green-600 transition">Home</Link>
-      <Link to="/ai-assistant" className="text-gray-700 hover:text-green-600 transition">AI Assistant</Link>
-        <Link to="/vaccinations" className="text-gray-700 hover:text-green-600 transition">Vaccination</Link>
-        <Link to="/flocks" className="text-gray-700 hover:text-green-600 transition">Manage Flock</Link>
-        {/* <Link to="/pedigree" className="text-gray-700 hover:text-green-600 transition">Pedigree Tracking</Link> */}
-        <Link to="/community" className="text-gray-700 hover:text-green-600 transition">Community Forum</Link>
-        <Link to="/biosecurity" className="text-gray-700 hover:text-green-600 transition">Biosecurity</Link>
-      </div>
-
-      {/* Farm Profile and Logout */}
-      {user && (
-        <div className="hidden md:flex items-center space-x-4">
-          <Link to="/profile" className="flex items-center space-x-2">
-            <div className="bg-green-500 text-white w-10 h-10 rounded-full flex items-center justify-center text-lg font-bold">
-              {getInitials(user.farmName)}
-            </div>
-            <span className="text-gray-700 font-medium">{user.farmName}</span>
+ {/* Mobile Menu */}
+{mobileMenuOpen && (
+  <div className="md:hidden fixed inset-0 bg-white z-50 mt-16 overflow-y-auto">
+    {/* Navigation Links */}
+    <div className="px-4 pt-2 pb-2">
+      {navLinks.map((link, index) => (
+        <React.Fragment key={link.path}>
+          <Link
+            to={link.path}
+            className="block px-4 py-3 text-base font-medium text-gray-700 hover:text-green-600 hover:bg-gray-50"
+            onClick={() => setMobileMenuOpen(false)}
+          >
+            {link.label}
           </Link>
-          <button onClick={() => setShowLogoutConfirm(true)} className="text-red-500 hover:underline">Logout</button>
-        </div>
-      )}
-
-      {/* Mobile Hamburger */}
-      <div className="md:hidden">
-        <button onClick={toggleMenu} className="text-gray-600 focus:outline-none">
-          {menuOpen ? (
-            <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2"
-                d="M6 18L18 6M6 6l12 12" />
-            </svg>
-          ) : (
-            <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2"
-                d="M4 6h16M4 12h16M4 18h16" />
-            </svg>
+          {index < navLinks.length - 1 && (
+            <div className="border-t border-gray-100 mx-4"></div>
           )}
+        </React.Fragment>
+      ))}
+    </div>
+
+    {/* Divider between nav and user menu */}
+    <div className="border-t border-gray-200 my-2"></div>
+
+    {/* User Menu */}
+    {user && (
+      <div className="px-4 pt-2 pb-4">
+        <Link
+          to="/profile"
+          className="block px-4 py-3 text-base font-medium text-gray-700 hover:text-green-600 hover:bg-gray-50"
+          onClick={() => setMobileMenuOpen(false)}
+        >
+          Profile
+        </Link>
+        <div className="border-t border-gray-100 mx-4"></div>
+        
+        <Link
+          to="/settings"
+          className="block px-4 py-3 text-base font-medium text-gray-700 hover:text-green-600 hover:bg-gray-50"
+          onClick={() => setMobileMenuOpen(false)}
+        >
+          Settings
+        </Link>
+        <div className="border-t border-gray-100 mx-4"></div>
+        
+        <Link
+          to="/support"
+          className="block px-4 py-3 text-base font-medium text-gray-700 hover:text-green-600 hover:bg-gray-50"
+          onClick={() => setMobileMenuOpen(false)}
+        >
+          Support
+        </Link>
+        <div className="border-t border-gray-100 mx-4"></div>
+        
+        <button
+          onClick={() => {
+            setMobileMenuOpen(false);
+            handleLogout();
+          }}
+          className="w-full text-left block px-4 py-3 text-base font-medium text-red-600 hover:bg-red-50"
+        >
+          Logout
         </button>
       </div>
-
-      {/* Mobile Menu */}
-      {menuOpen && (
-        <div className="absolute top-16 left-0 w-full bg-white shadow-md rounded-lg py-4 z-50">
-          <div className="flex flex-col space-y-4 items-center">
-          <Link to="/dashboard" onClick={toggleMenu} className="text-gray-700 hover:text-green-600 transition">Home</Link>
-          <Link to="/ai-assistant" onClick={toggleMenu} className="text-gray-700 hover:text-green-600 transition">AI Assistant</Link>
-            <Link to="/vaccinations" onClick={toggleMenu} className="text-gray-700 hover:text-green-600 transition">Vaccination</Link>
-            <Link to="/flocks" onClick={toggleMenu} className="text-gray-700 hover:text-green-600 transition">Manage Flock</Link>
-            {/* <Link to="/pedigree" onClick={toggleMenu} className="text-gray-700 hover:text-green-600 transition">Pedigree Tracking</Link> */}
-            <Link to="/community" onClick={toggleMenu} className="text-gray-700 hover:text-green-600 transition">Community Forum</Link>
-            <Link to="/biosecurity" onClick={toggleMenu} className="text-gray-700 hover:text-green-600 transition">Biosecurity</Link>
-            <Link to="/profile" onClick={toggleMenu} className="text-gray-700 hover:text-green-600 transition">Profile</Link>
-            <button onClick={() => { toggleMenu(); setShowLogoutConfirm(true); }} className="text-red-500 hover:underline">Logout</button>
-          </div>
-        </div>
-      )}
+    )}
+  </div>
+)}
     </nav>
   );
 }

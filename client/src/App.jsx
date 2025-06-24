@@ -16,6 +16,8 @@ import FlockDetails from "./pages/FlockDetails";
 import Flocks from "./pages/Flocks";
 import Biosecurity from "./pages/Biosecurity";
 import ForgotPassword from "./pages/ForgotPassword";
+import Settings from "./pages/Settings";
+import Support from "./pages/Support";
 
 function App() {
   return (
@@ -103,6 +105,22 @@ function App() {
           element={
             <ProtectedRoute>
               <Biosecurity />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/settings"
+          element={
+            <ProtectedRoute>
+              <Settings />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/support"
+          element={
+            <ProtectedRoute>
+              <Support />
             </ProtectedRoute>
           }
         />

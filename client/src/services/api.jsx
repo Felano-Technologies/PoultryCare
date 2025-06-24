@@ -38,12 +38,8 @@ export const loginUser = async (userData) => {
   return response.data;
 };
 
-export const fetchUserProfile = async (token) => {
-  const response = await API.get("/auth/profile", {
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
-  });
+export const fetchUserProfile = async () => {
+  const response = await API.get("/auth/profile");
   return response.data;
 };
 
@@ -190,6 +186,83 @@ export const markNotificationAsRead = async (id) => {
   return response.data;
 };
 
+export const fetchVisitors = async () => {
+  try {
+    const response = await API.get('/visitors/get');
+    return response.data;
+  } catch (error) {
+    console.error('Error fetching visitors:', error);
+    throw error;
+  }
+};
 
+export const createVisitor = async (visitorData) => {
+  try {
+    const response = await API.post('/visitors/add', visitorData);
+    return response.data;
+  } catch (error) {
+    console.error('Error creating visitor:', error);
+    throw error;
+  }
+};
+
+export const updateUserProfile = async (userData) => {
+  try {
+    const response = await API.patch('/auth/profile', userData);
+    return response.data;
+  } catch (error) {
+    const errorMessage = error.response?.data?.message || 
+                        'Failed to update profile. Please try again.';
+    console.error('Profile update error:', errorMessage);
+    throw new Error(errorMessage);
+  }
+};
+
+// --- Community Forum ---
+export const getForumPosts = async () => {
+  const response = await API.get("/community/posts");
+  return response.data;
+};
+
+export const createForumPost = async (content) => {
+  const response = await API.post("/community/posts", { content });
+  return response.data;
+};
+
+export const updateForumPost = async (postId, content) => {
+  const response = await API.put(`/community/posts/${postId}`, { content });
+  return response.data;
+};
+
+export const deleteForumPost = async (postId) => {
+  const response = await API.delete(`/community/posts/${postId}`);
+  return response.data;
+};
+
+export const addCommentToPost = async (postId, text) => {
+  const response = await API.post(`/community/posts/${postId}/comments`, { text });
+  return response.data;
+};
+
+// --- Expert Consultation ---
+export const getExpertsByRole = async (role) => {
+  const response = await API.get(`/consultation/experts?role=${role}`);
+  return response.data;
+};
+
+export const bookConsultation = async (bookingData) => {
+  const response = await API.post("/consultation/bookings", bookingData);
+  return response.data;
+};
+
+export const getUserConsultations = async () => {
+  const response = await API.get("/consultation/bookings");
+  return response.data;
+};
+
+export const getChatResponse = async (message) => {
+  const response = await API.post("/consultation/chat", { message });
+  return response.data;
+};
 
 export default API;
