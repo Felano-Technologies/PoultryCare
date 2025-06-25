@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
-import { createVaccination, fetchVaccinationStats, fetchVaccinations } from '../services/api';
-import toast from 'react-hot-toast';
+import { createVaccination, fetchVaccinationStats, fetchVaccinations, deleteVaccination, updateVaccination, exportVaccinationsToExcel } from '../services/api';
+import {toast} from 'react-toastify';
+import { FaEdit, FaTrash, FaFileExcel } from 'react-icons/fa';
 
 export default function Vaccination() {
   const [loading, setLoading] = useState(false); // <-- Loading state
@@ -32,7 +33,29 @@ export default function Vaccination() {
   const [vaccinations, setVaccinations] = useState([]);
   
 const [stats, setStats] = useState(null);
+const [editingRecord, setEditingRecord] = useState(null);
   
+const resetForm = () => {
+  setFlockName('');
+  setAge('');
+  setType('');
+  setBreed('');
+  setVaccineName('');
+  setVaccineType('');
+  setManufacturer('');
+  setVaccineBatch('');
+  setExpiryDate('');
+  setDosage('');
+  setDateTime('');
+  setAdministeredBy('');
+  setVaccinatedCount('');
+  setWithdrawalTime('');
+  setPreHealthCheck('');
+  setPostReactions('');
+  setNextVaccinationDate('');
+  setEditingRecord(null);
+};
+
 
   useEffect(() => {
     const loadVaccinations = async () => {
@@ -82,11 +105,67 @@ const [stats, setStats] = useState(null);
       await createVaccination(vaccinationData);
       toast.success('Vaccination saved!');
       setShowModal(false);
-      // Optionally reload data
+      resetForm();
     } catch (error) {
       toast.error('Failed to save vaccination');
     } finally {
       setLoading(false); // Stop loading
+    }
+  };
+
+  const handleDelete = async (id) => {
+    if (window.confirm('Are you sure you want to delete this record? This cannot be undone.')) {
+      try {
+        await deleteVaccination(id);
+        toast.success('Record deleted');
+        const data = await fetchVaccinations();
+        setVaccinations(data);
+      } catch (error) {
+        toast.error('Failed to delete record');
+      }
+    }
+  };
+
+  const handleEdit = (record) => {
+    setEditingRecord(record);
+    // Populate form fields
+    setFlockName(record.flockName);
+    setAge(record.age);
+    setType(record.type);
+    setBreed(record.breed);
+    setVaccineName(record.vaccineName);
+    setVaccineType(record.vaccineType);
+    setManufacturer(record.manufacturer);
+    setVaccineBatch(record.vaccineBatch);
+    setExpiryDate(record.expiryDate);
+    setDosage(record.dosage);
+    setDateTime(record.dateTime);
+    setAdministeredBy(record.administeredBy);
+    setVaccinatedCount(record.vaccinatedCount);
+    setWithdrawalTime(record.withdrawalTime);
+    setPreHealthCheck(record.preHealthCheck);
+    setPostReactions(record.postReactions);
+    setNextVaccinationDate(record.nextVaccinationDate);
+    setShowModal(true);
+  };
+
+  const handleExport = async () => {
+    try {
+      const response = await exportVaccinationsToExcel();
+      
+      // Create blob URL
+      const url = window.URL.createObjectURL(new Blob([response]));
+      const link = document.createElement('a');
+      link.href = url;
+      link.setAttribute('download', `vaccination_records_${new Date().toISOString().split('T')[0]}.xlsx`);
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      
+      toast.success('Export successful');
+    } catch (error) {
+      console.error('Export failed:', error);
+      toast.error(`Failed to export records: ${error.message}`);
     }
   };
   
@@ -153,8 +232,21 @@ const [stats, setStats] = useState(null);
                   <td className="px-4 py-2">{vax.vaccineName || '-'}</td>
                   <td className="px-4 py-2">{vax.dateTime?.slice(0, 10)}</td>
                   <td className="px-4 py-2 text-yellow-600 font-semibold">Upcoming</td>
-                  <td className="px-4 py-2">
-                    <button className="text-blue-600 hover:underline text-sm">View</button>
+                  <td className="px-4 py-2 flex gap-2">
+                    <button 
+                      onClick={() => handleEdit(vax)}
+                      className="text-blue-600 hover:text-blue-800 p-1"
+                      title="Edit"
+                    >
+                      <FaEdit />
+                    </button>
+                    <button 
+                      onClick={() => handleDelete(vax._id)}
+                      className="text-red-600 hover:text-red-800 p-1"
+                      title="Delete"
+                    >
+                      <FaTrash />
+                    </button>
                   </td>
                 </tr>
               ))}
@@ -163,12 +255,20 @@ const [stats, setStats] = useState(null);
         </div>
 
         {/* Add Vaccination Button */}
-        <button
-          onClick={() => setShowModal(true)}
-          className="inline-block bg-green-500 text-white px-6 py-3 rounded-lg hover:bg-green-600 transition"
-        >
-          Add New Vaccination
-        </button>
+        <div className="flex gap-4">
+          <button
+            onClick={() => setShowModal(true)}
+            className="inline-block bg-green-500 text-white px-6 py-3 rounded-lg hover:bg-green-600 transition"
+          >
+            Add New Vaccination
+          </button>
+          <button
+            onClick={handleExport}
+            className="inline-block bg-blue-500 text-white px-6 py-3 rounded-lg hover:bg-blue-600 transition flex items-center gap-2"
+          >
+            Export to Excel
+          </button>
+        </div>
       </div>
 
       {/* Add Vaccination Modal */}
@@ -181,7 +281,9 @@ const [stats, setStats] = useState(null);
       >
         &times;
       </button>
-      <h2 className="text-2xl font-bold mb-4">Add Vaccination Record</h2>
+      <h2 className="text-2xl font-bold mb-4">
+        {editingRecord ? 'Edit Vaccination Record' : 'Add Vaccination Record'}
+      </h2>
 
       <form onSubmit={handleAddVaccination} className="space-y-6 max-h-[80vh] overflow-y-auto pr-2">
 

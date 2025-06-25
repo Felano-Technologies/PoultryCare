@@ -1,25 +1,51 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { fetchFlocks } from '../services/api'; 
+import { fetchFlocks, deleteFlock, exportFlock } from '../services/api';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
-import { Bird, ArrowRight } from 'lucide-react';
+import { Bird, ArrowRight, Edit, Trash2, Download } from 'lucide-react';
+import { toast } from 'react-toastify';
 
 export default function FlockList() {
   const [flocks, setFlocks] = useState([]);
   const navigate = useNavigate();
 
   useEffect(() => {
-    async function loadFlocks() {
-      try {
-        const data = await fetchFlocks();
-        setFlocks(data);
-      } catch (error) {
-        console.error('Failed to load flocks:', error);
-      }
-    }
     loadFlocks();
   }, []);
+
+  async function loadFlocks() {
+    try {
+      const data = await fetchFlocks();
+      setFlocks(data);
+    } catch (error) {
+      console.error('Failed to load flocks:', error);
+      toast.error('Failed to load flocks');
+    }
+  }
+
+  const handleDelete = async (flockId, e) => {
+    e.stopPropagation();
+    try {
+      await deleteFlock(flockId);
+      setFlocks(flocks.filter(flock => flock._id !== flockId));
+      toast.success('Flock deleted successfully');
+    } catch (error) {
+      console.error('Failed to delete flock:', error);
+      toast.error('Failed to delete flock');
+    }
+  };
+
+  const handleExport = async (flockId, e) => {
+    e.stopPropagation();
+    try {
+      await exportFlock(flockId);
+      toast.success('Export started successfully');
+    } catch (error) {
+      console.error('Failed to export flock:', error);
+      toast.error('Failed to export flock');
+    }
+  };
 
   return (
     <div className="min-h-screen flex flex-col">
@@ -39,7 +65,7 @@ export default function FlockList() {
               {flocks.map((flock) => (
                 <div
                   key={flock._id}
-                  className="bg-white border border-gray-200 rounded-2xl shadow-sm p-6 hover:shadow-lg transition duration-200 cursor-pointer"
+                  className="bg-white border border-gray-200 rounded-2xl shadow-sm p-6 hover:shadow-lg transition duration-200 cursor-pointer relative"
                   onClick={() => navigate(`/flock-details/${flock._id}`)}
                 >
                   <div className="flex items-center gap-3 mb-4">
@@ -48,7 +74,34 @@ export default function FlockList() {
                   </div>
                   <p className="text-sm text-gray-600">Bird Count: <span className="font-medium text-gray-800">{flock.birdCount}</span></p>
                   <p className="text-sm text-gray-600">Age: <span className="font-medium text-gray-800">{flock.acquiredAt}</span></p>
-                  <div className="mt-4 flex justify-end">
+                  
+                  <div className="mt-4 flex justify-between items-center">
+                    <div className="flex gap-3">
+                      <button 
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          navigate(`/edit-flock/${flock._id}`);
+                        }}
+                        className="text-gray-500 hover:text-green-600 transition"
+                        title="Edit"
+                      >
+                        <Edit className="w-5 h-5" />
+                      </button>
+                      <button 
+                        onClick={(e) => handleDelete(flock._id, e)}
+                        className="text-gray-500 hover:text-red-600 transition"
+                        title="Delete"
+                      >
+                        <Trash2 className="w-5 h-5" />
+                      </button>
+                      <button 
+                        onClick={(e) => handleExport(flock._id, e)}
+                        className="text-gray-500 hover:text-blue-600 transition"
+                        title="Export"
+                      >
+                        <Download className="w-5 h-5" />
+                      </button>
+                    </div>
                     <ArrowRight className="w-5 h-5 text-green-600" />
                   </div>
                 </div>

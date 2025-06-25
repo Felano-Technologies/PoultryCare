@@ -5,6 +5,7 @@ import {
   addComment,
   updatePost,
   deletePost,
+  getPostComments
 } from '../controllers/communityController.js';
 import authMiddleware  from '../middleware/authMiddleware.js';
 
@@ -20,7 +21,8 @@ router.route('/posts/:id')
   .delete(authMiddleware, deletePost);
 
 router.route('/posts/:postId/comments')
-  .post(authMiddleware, addComment);
+  .post(authMiddleware, addComment)
+  .get(getPostComments);
 
 
 

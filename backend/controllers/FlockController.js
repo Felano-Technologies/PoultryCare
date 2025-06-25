@@ -249,3 +249,98 @@ export const getFarmStatistics = async (req, res) => {
     });
   }
 };
+
+// @desc    Delete a flock
+// @route   DELETE /api/flocks/:id
+// @access  Private
+export const deleteFlock = async (req, res) => {
+  try {
+    const flock = await Flock.findById(req.params.id);
+    
+    if (!flock) {
+      return res.status(404).json({ message: 'Flock not found' });
+    }
+
+    if (flock.user.toString() !== req.user._id.toString()) {
+      return res.status(401).json({ message: 'Not authorized' });
+    }
+
+    await flock.remove();
+    res.json({ message: 'Flock removed' });
+  } catch (error) {
+    res.status(500).json({ message: 'Server Error' });
+  }
+};
+
+// @desc    Export flock data to Excel
+// @route   GET /api/flocks/export/:id
+// @access  Private
+export const exportFlock = async (req, res) => {
+  try {
+    const flock = await Flock.findById(req.params.id);
+    
+    if (!flock) {
+      return res.status(404).json({ message: 'Flock not found' });
+    }
+
+    if (flock.user.toString() !== req.user._id.toString()) {
+      return res.status(401).json({ message: 'Not authorized' });
+    }
+
+    // Create workbook
+    const workbook = new ExcelJS.Workbook();
+    const worksheet = workbook.addWorksheet('Flock Data');
+
+    // Add headers
+    worksheet.columns = [
+      { header: 'Flock Name', key: 'flockName', width: 20 },
+      { header: 'Bird Count', key: 'birdCount', width: 15 },
+      { header: 'Type', key: 'type', width: 15 },
+      { header: 'Breed', key: 'breed', width: 15 },
+      { header: 'Acquired At', key: 'acquiredAt', width: 15 },
+      { header: 'Notes', key: 'notes', width: 30 },
+    ];
+
+    // Format headers
+    worksheet.getRow(1).eachCell((cell) => {
+      cell.font = { bold: true };
+      cell.fill = {
+        type: 'pattern',
+        pattern: 'solid',
+        fgColor: { argb: 'FFD3D3D3' },
+      };
+      cell.border = {
+        top: { style: 'thin' },
+        left: { style: 'thin' },
+        bottom: { style: 'thin' },
+        right: { style: 'thin' },
+      };
+    });
+
+    // Add data
+    worksheet.addRow({
+      flockName: flock.flockName,
+      birdCount: flock.birdCount,
+      type: flock.type,
+      breed: flock.breed,
+      acquiredAt: flock.acquiredAt?.toISOString().split('T')[0] || '',
+      notes: flock.notes,
+    });
+
+    // Set response headers
+    res.setHeader(
+      'Content-Type',
+      'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+    );
+    res.setHeader(
+      'Content-Disposition',
+      `attachment; filename=flock_${flock._id}_${new Date().toISOString().split('T')[0]}.xlsx`
+    );
+
+    // Send the file
+    await workbook.xlsx.write(res);
+    res.end();
+  } catch (error) {
+    res.status(500).json({ message: 'Failed to generate Excel file', error: error.message });
+  }
+};

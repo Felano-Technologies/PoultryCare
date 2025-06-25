@@ -104,6 +104,44 @@ export const getPosts = async (req, res) => {
   }
 };
 
+// @desc    Get comments for a specific post
+// @route   GET /api/community/posts/:postId/comments
+// @access  Public
+export const getPostComments = async (req, res) => {
+  try {
+    const { postId } = req.params;
+
+    // Verify post exists
+    const postExists = await Post.exists({ _id: postId });
+    if (!postExists) {
+      return res.status(404).json({ 
+        success: false,
+        message: 'Post not found'
+      });
+    }
+
+    const comments = await Comment.find({ post: postId })
+      .sort({ createdAt: -1 })
+      .select('-__v')
+      .lean();
+
+    res.status(200).json({
+      success: true,
+      count: comments.length,
+      postId,
+      data: comments
+    });
+  } catch (error) {
+    console.error('Get Post Comments Error:', error);
+    res.status(500).json({ 
+      success: false,
+      message: 'Failed to retrieve post comments',
+      error: process.env.NODE_ENV === 'development' ? error.message : undefined
+    });
+  }
+};
+
+
 // @desc    Add comment to a post
 // @route   POST /api/community/posts/:postId/comments
 // @access  Private

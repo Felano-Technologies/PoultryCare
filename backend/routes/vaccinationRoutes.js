@@ -1,5 +1,9 @@
 import express from 'express';
-import { createVaccination, getVaccinations, getVaccinationStats, getVaccinationChartData, getNextVaccination } from '../controllers/vaccinationController.js';
+import { createVaccination, getVaccinations, getVaccinationStats, getVaccinationChartData, getNextVaccination,
+    deleteVaccination,
+    updateVaccination,
+    exportVaccinations
+} from '../controllers/vaccinationController.js';
 import authMiddleware from '../middleware/authMiddleware.js';
 
 const router = express.Router();
@@ -9,6 +13,8 @@ router.get('/', authMiddleware, getVaccinations);
 router.get('/stats', authMiddleware, getVaccinationStats);
 router.get('/chart', authMiddleware, getVaccinationChartData);
 router.get('/next', authMiddleware, getNextVaccination);
-
+router.delete('/:id', authMiddleware, deleteVaccination);
+router.put('/:id', authMiddleware, updateVaccination);
+router.get('/export', authMiddleware, exportVaccinations);
 
 export default router;

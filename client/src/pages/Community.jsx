@@ -11,12 +11,14 @@ import {
   getExpertsByRole,
   bookConsultation,
   getChatResponse,
+  getForumComments,
 } from "../services/api";
 import {toast} from "react-toastify";
 
 const ForumConsultation = () => {
   const [activeTab, setActiveTab] = useState("forum");
   const [forumPosts, setForumPosts] = useState([]);
+  const [commentsByPost, setCommentsByPost] = useState({});
   const [newPost, setNewPost] = useState("");
   const [newComment, setNewComment] = useState({});
   const [chatMessage, setChatMessage] = useState("");
@@ -43,6 +45,26 @@ const ForumConsultation = () => {
     };
     fetchPosts();
   }, []);
+
+  useEffect(() => {
+    const fetchCommentsForPosts = async () => {
+      const commentsMap = {};
+      for (const post of forumPosts) {
+        try {
+          const comments = await getForumComments(post._id);
+          commentsMap[post._id] = comments.data; // Assuming API returns { data: [...] }
+        } catch (error) {
+          commentsMap[post._id] = [];
+          console.error(`Failed to load comments for post ${post._id}`, error);
+        }
+      }
+      setCommentsByPost(commentsMap);
+    };
+
+    if (forumPosts.length > 0) {
+      fetchCommentsForPosts();
+    }
+  }, [forumPosts]);
 
   // Fetch experts when role changes
   useEffect(() => {
@@ -104,11 +126,13 @@ const ForumConsultation = () => {
     
     try {
       const comment = await addCommentToPost(postId, newComment[postId]);
-      setForumPosts(forumPosts.map(post => 
-        post._id === postId 
-          ? { ...post, comments: [...post.comments, comment] } 
-          : post
-      ));
+      
+      // Update the comments for this specific post
+      setCommentsByPost(prev => ({
+        ...prev,
+        [postId]: [...(prev[postId] || []), comment]
+      }));
+      
       setNewComment({ ...newComment, [postId]: "" });
       toast.success("Comment added successfully");
     } catch (error) {
@@ -229,12 +253,20 @@ const ForumConsultation = () => {
                   
                   {/* Comments Section */}
                   <div className="ml-4 mt-3 border-t pt-3">
-                    {post.comments?.map((comment) => (
-                      <div key={comment._id} className="text-sm text-gray-700 mb-2">
-                        <MessageSquare size={12} className="inline-block mr-1" />
-                        <strong>{comment.authorName || "Unknown"}</strong>: {comment.text}
+                  {commentsByPost[post._id]?.map((comment) => (
+                    <div key={comment._id} className="text-sm text-gray-700 mb-2 pl-2 border-l-2 border-gray-200">
+                      <div className="flex items-start">
+                        <User size={14} className="inline-block mr-1 mt-1 flex-shrink-0" />
+                        <div>
+                          <strong className="text-blue-600">{comment.authorName || "Unknown"}</strong>
+                          <p className="text-gray-800">{comment.text}</p>
+                          <span className="text-xs text-gray-500">
+                            {new Date(comment.createdAt).toLocaleString()}
+                          </span>
+                        </div>
                       </div>
-                    ))}
+                    </div>
+                  ))}
                     
                     {/* Add Comment */}
                     <div className="flex gap-2 mt-2">

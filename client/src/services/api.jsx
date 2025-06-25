@@ -115,6 +115,23 @@ export const fetchNextVaccination = async () => {
   return response.data;
 };
 
+export const deleteVaccination = async (id) => {
+  const response = await API.delete(`/vaccinations/${id}`);
+  return response.data;
+};
+
+export const updateVaccination = async (id, data) => {
+  const response = await API.put(`/vaccinations/${id}`, data);
+  return response.data;
+};
+
+export const exportVaccinationsToExcel = async () => {
+  const response = await API.get('/vaccinations/export', {
+    responseType: 'blob' // Important for file downloads
+  });
+  return response.data;
+};
+
 // Fetch flock details by ID
 export const fetchFlockById = async (id) => {
   const response = await API.get(`/flocks/${id}`);
@@ -133,6 +150,25 @@ export const logFlockFeed = async (id, data) => {
   return response.data;
 };
 
+export const deleteFlock = async (flockId) => {
+  await API.delete(`/flocks/${flockId}`);
+};
+
+export const exportFlock = async (flockId) => {
+  const response = await API.get(`/flocks/export/${flockId}`, {
+    responseType: 'blob',
+  });
+  
+  // Create download link
+  const url = window.URL.createObjectURL(new Blob([response.data]));
+  const link = document.createElement('a');
+  link.href = url;
+  link.setAttribute('download', `flock_${flockId}_${new Date().toISOString().split('T')[0]}.xlsx`);
+  document.body.appendChild(link);
+  link.click();
+  link.parentNode.removeChild(link);
+};
+
 
 // Upload image to backend (Cloudinary)
 export const uploadToCloudinary = async (file) => {
@@ -145,23 +181,38 @@ export const uploadToCloudinary = async (file) => {
     },
   });
 
-  return res.data.imageUrl; // Returns the Cloudinary URL
+  return res.data.imageUrl; 
 };
 
-// Ask the AI assistant (with optional image)
-export const askAI = async ({ question, image }) => {
+
+export const askAI = async ({ question, image, chatId }) => {
   const res = await API.post("/ai/ask", {
     question,
     image, 
+    chatId
   });
   return res.data;
 };
 
-export const fetchMessages = async (page = 1, limit = 20) => {
-  const response = await API.get(`/ai/messages?page=${page}&limit=${limit}`);
+export const fetchMessages = async (chatId, page = 1, limit = 20) => {
+  const response = await API.get(`/ai/messages?chatId=${chatId}&page=${page}&limit=${limit}`);
   return response.data;
 };
 
+export const fetchChatHistory = async () => {
+  const response = await API.get('/ai/chats');
+  return response.data;
+};
+
+export const createNewChat = async () => {
+  const response = await API.post('/ai/chats');
+  return response.data;
+};
+
+export const deleteChat = async (chatId) => {
+  const response = await API.delete(`/ai/chats/${chatId}`);
+  return response.data;
+};
 
 
 // Activity Log API
@@ -221,6 +272,11 @@ export const updateUserProfile = async (userData) => {
 // --- Community Forum ---
 export const getForumPosts = async () => {
   const response = await API.get("/community/posts");
+  return response.data;
+};
+
+export const getForumComments = async (postId) => {
+  const response = await API.get(`/community/posts/${postId}/comments`);
   return response.data;
 };
 
