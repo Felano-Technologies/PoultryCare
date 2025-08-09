@@ -303,11 +303,11 @@ const resetForm = () => {
           <h3 className="text-lg font-semibold text-gray-700 mb-2">Vaccine Details</h3>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <input type="text" value={vaccineName} onChange={(e) => setVaccineName(e.target.value)} placeholder="Vaccine Name" className="border px-3 py-2 rounded" required />
-            <input type="text" value={vaccineType} onChange={(e) => setVaccineType(e.target.value)} placeholder="Type" className="border px-3 py-2 rounded" />
+            <input type="text" value={vaccineType} onChange={(e) => setVaccineType(e.target.value)} placeholder="Method" className="border px-3 py-2 rounded" />
             <input type="text" value={manufacturer} onChange={(e) => setManufacturer(e.target.value)} placeholder="Manufacturer" className="border px-3 py-2 rounded" />
             <input type="text" value={vaccineBatch} onChange={(e) => setVaccineBatch(e.target.value)} placeholder="Batch Number" className="border px-3 py-2 rounded" />
             <input type={expiryDate ? "date" : "text"} value={expiryDate} onChange={(e) => setExpiryDate(e.target.value)} className="border px-3 py-2 rounded" placeholder="Expiry Date"  onFocus={(e) => !expiryDate && (e.target.type = 'date')} onBlur={(e) => !e.target.value && (e.target.type = 'text')} />
-            <input type="text" value={dosage} onChange={(e) => setDosage(e.target.value)} placeholder="Dosage & Method" className="border px-3 py-2 rounded" />
+            <input type="text" value={dosage} onChange={(e) => setDosage(e.target.value)} placeholder="Dosage" className="border px-3 py-2 rounded" />
           </div>
         </div>
 
