@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { fetchUserProfile } from '../services/api';
 import { 
   ChevronDown, 
@@ -16,6 +16,7 @@ export default function Navbar() {
   const [profileDropdownOpen, setProfileDropdownOpen] = useState(false);
   const [user, setUser] = useState(null);
   const navigate = useNavigate();
+  const location = useLocation(); // Get current route location
 
   useEffect(() => {
     const token = localStorage.getItem("token");
@@ -59,6 +60,12 @@ export default function Navbar() {
     { path: "/biosecurity", label: "Biosecurity" }
   ];
 
+  // Function to check if a link is active
+  const isActive = (path) => {
+    return location.pathname === path || 
+           (path !== "/dashboard" && location.pathname.startsWith(path));
+  };
+
   return (
     <nav className="bg-white shadow-sm sticky top-0 z-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -83,7 +90,11 @@ export default function Navbar() {
               <Link
                 key={link.path}
                 to={link.path}
-                className="text-gray-700 hover:text-green-600 px-3 py-2 text-sm font-medium transition-colors"
+                className={`px-3 py-2 text-sm font-medium transition-colors ${
+                  isActive(link.path) 
+                    ? 'text-green-600 border-b-2 border-green-600' 
+                    : 'text-gray-700 hover:text-green-600'
+                }`}
               >
                 {link.label}
               </Link>
@@ -171,73 +182,89 @@ export default function Navbar() {
         </div>
       </div>
 
- {/* Mobile Menu */}
-{mobileMenuOpen && (
-  <div className="md:hidden fixed inset-0 bg-white z-50 mt-16 overflow-y-auto">
-    {/* Navigation Links */}
-    <div className="px-4 pt-2 pb-2">
-      {navLinks.map((link, index) => (
-        <React.Fragment key={link.path}>
-          <Link
-            to={link.path}
-            className="block px-4 py-3 text-base font-medium text-gray-700 hover:text-green-600 hover:bg-gray-50"
-            onClick={() => setMobileMenuOpen(false)}
-          >
-            {link.label}
-          </Link>
-          {index < navLinks.length - 1 && (
-            <div className="border-t border-gray-100 mx-4"></div>
+      {/* Mobile Menu */}
+      {mobileMenuOpen && (
+        <div className="md:hidden fixed inset-0 bg-white z-50 mt-16 overflow-y-auto">
+          {/* Navigation Links */}
+          <div className="px-4 pt-2 pb-2">
+            {navLinks.map((link, index) => (
+              <React.Fragment key={link.path}>
+                <Link
+                  to={link.path}
+                  className={`block px-4 py-3 text-base font-medium ${
+                    isActive(link.path)
+                      ? 'text-green-600 bg-green-50'
+                      : 'text-gray-700 hover:text-green-600 hover:bg-gray-50'
+                  }`}
+                  onClick={() => setMobileMenuOpen(false)}
+                >
+                  {link.label}
+                </Link>
+                {index < navLinks.length - 1 && (
+                  <div className="border-t border-gray-100 mx-4"></div>
+                )}
+              </React.Fragment>
+            ))}
+          </div>
+
+          {/* Divider between nav and user menu */}
+          <div className="border-t border-gray-200 my-2"></div>
+
+          {/* User Menu */}
+          {user && (
+            <div className="px-4 pt-2 pb-4">
+              <Link
+                to="/profile"
+                className={`block px-4 py-3 text-base font-medium ${
+                  isActive('/profile')
+                    ? 'text-green-600 bg-green-50'
+                    : 'text-gray-700 hover:text-green-600 hover:bg-gray-50'
+                }`}
+                onClick={() => setMobileMenuOpen(false)}
+              >
+                Profile
+              </Link>
+              <div className="border-t border-gray-100 mx-4"></div>
+              
+              <Link
+                to="/settings"
+                className={`block px-4 py-3 text-base font-medium ${
+                  isActive('/settings')
+                    ? 'text-green-600 bg-green-50'
+                    : 'text-gray-700 hover:text-green-600 hover:bg-gray-50'
+                }`}
+                onClick={() => setMobileMenuOpen(false)}
+              >
+                Settings
+              </Link>
+              <div className="border-t border-gray-100 mx-4"></div>
+              
+              <Link
+                to="/support"
+                className={`block px-4 py-3 text-base font-medium ${
+                  isActive('/support')
+                    ? 'text-green-600 bg-green-50'
+                    : 'text-gray-700 hover:text-green-600 hover:bg-gray-50'
+                }`}
+                onClick={() => setMobileMenuOpen(false)}
+              >
+                Support
+              </Link>
+              <div className="border-t border-gray-100 mx-4"></div>
+              
+              <button
+                onClick={() => {
+                  setMobileMenuOpen(false);
+                  handleLogout();
+                }}
+                className="w-full text-left block px-4 py-3 text-base font-medium text-red-600 hover:bg-red-50"
+              >
+                Logout
+              </button>
+            </div>
           )}
-        </React.Fragment>
-      ))}
-    </div>
-
-    {/* Divider between nav and user menu */}
-    <div className="border-t border-gray-200 my-2"></div>
-
-    {/* User Menu */}
-    {user && (
-      <div className="px-4 pt-2 pb-4">
-        <Link
-          to="/profile"
-          className="block px-4 py-3 text-base font-medium text-gray-700 hover:text-green-600 hover:bg-gray-50"
-          onClick={() => setMobileMenuOpen(false)}
-        >
-          Profile
-        </Link>
-        <div className="border-t border-gray-100 mx-4"></div>
-        
-        <Link
-          to="/settings"
-          className="block px-4 py-3 text-base font-medium text-gray-700 hover:text-green-600 hover:bg-gray-50"
-          onClick={() => setMobileMenuOpen(false)}
-        >
-          Settings
-        </Link>
-        <div className="border-t border-gray-100 mx-4"></div>
-        
-        <Link
-          to="/support"
-          className="block px-4 py-3 text-base font-medium text-gray-700 hover:text-green-600 hover:bg-gray-50"
-          onClick={() => setMobileMenuOpen(false)}
-        >
-          Support
-        </Link>
-        <div className="border-t border-gray-100 mx-4"></div>
-        
-        <button
-          onClick={() => {
-            setMobileMenuOpen(false);
-            handleLogout();
-          }}
-          className="w-full text-left block px-4 py-3 text-base font-medium text-red-600 hover:bg-red-50"
-        >
-          Logout
-        </button>
-      </div>
-    )}
-  </div>
-)}
+        </div>
+      )}
     </nav>
   );
 }

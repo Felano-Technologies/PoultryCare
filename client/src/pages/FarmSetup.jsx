@@ -102,10 +102,13 @@ export default function FarmSetup() {
 
         <div className="relative">
           <input
-            type="date"
+            type={acquiredAt ? "date" : "text"}
             className="w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm pr-10 focus:outline-none focus:ring-2 focus:ring-green-500 bg-white"
             value={acquiredAt}
+            placeholder="Accquired at Date"
             onChange={(e) => setAcquiredAt(e.target.value)}
+            onFocus={(e) => !acquiredAt && (e.target.type = 'date')}
+            onBlur={(e) => !e.target.value && (e.target.type = 'text')}
             required
           />
           <CalendarIcon className="absolute top-3 right-3 text-gray-400" size={20} />

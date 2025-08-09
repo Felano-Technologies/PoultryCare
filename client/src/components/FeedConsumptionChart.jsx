@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { Line } from 'react-chartjs-2';
 import {
   Chart as ChartJS,
@@ -10,7 +10,9 @@ import {
   Tooltip,
   Legend
 } from 'chart.js';
-import { fetchFlockFeedCounts } from '../services/api'; // Add this to your api.js
+import { fetchFlockFeedCounts } from '../services/api';
+import { useChartExport } from '../hooks/useChartExport';
+import { Download } from 'lucide-react';
 
 // Register necessary chart components
 ChartJS.register(
@@ -25,6 +27,8 @@ ChartJS.register(
 
 export default function FeedConsumptionChart() {
   const [chartData, setChartData] = useState(null);
+  const chartRef = useRef(null);
+  const { exportChart, isExporting } = useChartExport();
 
   useEffect(() => {
     const loadData = async () => {
@@ -51,6 +55,12 @@ export default function FeedConsumptionChart() {
     
     loadData();
   }, []);
+
+  const handleExport = async () => {
+    if (!chartRef.current) return;
+    await new Promise(resolve => setTimeout(resolve, 300)); // Wait for chart render
+    await exportChart(chartRef.current, 'feed-consumption-trend');
+  };
 
   const options = {
     responsive: true,
@@ -83,9 +93,21 @@ export default function FeedConsumptionChart() {
   }
 
   return (
-    <div className="bg-white p-6 rounded-lg shadow-md h-full">
-      <h3 className="text-lg font-semibold text-gray-700 mb-4">Feed Intake Trend</h3>
-      <Line data={chartData} options={options} />
+    <div className="bg-white p-6 rounded-lg shadow-md h-full relative">
+      <div className="flex justify-between items-center mb-4">
+        <h3 className="text-lg font-semibold text-gray-700">Feed Intake Trend</h3>
+        <button
+          onClick={handleExport}
+          disabled={isExporting}
+          className="p-2 text-green-600 hover:text-green-800 transition-colors"
+          title="Export chart"
+        >
+          <Download className={`h-5 w-5 ${isExporting ? 'opacity-50' : ''}`} />
+        </button>
+      </div>
+      <div ref={chartRef}>
+        <Line data={chartData} options={options} />
+      </div>
     </div>
   );
 }

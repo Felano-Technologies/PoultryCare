@@ -183,27 +183,27 @@ const resetForm = () => {
         {/* Overview Summary Cards */}
         {stats && (
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4 mb-8">
-            <div className="bg-white p-4 shadow rounded-lg">
-              <h2 className="text-sm text-gray-500">Total Batches</h2>
-              <p className="text-2xl font-bold text-green-600 mt-1">{stats.totalBatches}</p>
+            <div className="bg-white p-5 shadow rounded-lg">
+              <h2 className="text-lg font-bold text-gray-500">Total Batches</h2>
+              <p className="text-2xl font-extrabold text-green-600 mt-1">{stats.totalBatches}</p>
             </div>
             <div className="bg-white p-4 shadow rounded-lg">
-              <h2 className="text-sm text-gray-500">Vaccination Coverage</h2>
-              <p className="text-2xl font-bold text-green-600 mt-1">{stats.vaccinationCoverage}%</p>
+              <h2 className="text-lg font-bold text-gray-500">Vaccination Coverage</h2>
+              <p className="text-2xl font-extrabold text-green-600 mt-1">{stats.vaccinationCoverage}%</p>
             </div>
             <div className="bg-white p-4 shadow rounded-lg">
-              <h2 className="text-sm text-gray-500">Next Dose Due</h2>
-              <p className="text-lg font-medium text-yellow-600 mt-1">
+              <h2 className="text-lg font-bold text-gray-500">Next Dose Due</h2>
+              <p className="text-2xl font-extrabold text-yellow-600 mt-1">
                 {stats.nextDoseDue ? new Date(stats.nextDoseDue).toLocaleDateString() : 'N/A'}
               </p>
             </div>
             <div className="bg-white p-4 shadow rounded-lg">
-              <h2 className="text-sm text-gray-500">Missed Vaccinations</h2>
-              <p className="text-2xl font-bold text-red-500 mt-1">{stats.missedCount}</p>
+              <h2 className="text-lg font-bold text-gray-500">Missed Vaccinations</h2>
+              <p className="text-2xl font-extrabold text-red-500 mt-1">{stats.missedCount}</p>
             </div>
             <div className="bg-white p-4 shadow rounded-lg">
-              <h2 className="text-sm text-gray-500">Mortality Post-Vaccine</h2>
-              <p className="text-2xl font-bold text-red-400 mt-1">{stats.mortalityRate}%</p>
+              <h2 className="text-lg font-bold text-gray-500">Mortality Post-Vaccine</h2>
+              <p className="text-2xl font-extrabold text-red-600 mt-1">{stats.mortalityRate}%</p>
             </div>
           </div>
         )}
@@ -306,7 +306,7 @@ const resetForm = () => {
             <input type="text" value={vaccineType} onChange={(e) => setVaccineType(e.target.value)} placeholder="Type" className="border px-3 py-2 rounded" />
             <input type="text" value={manufacturer} onChange={(e) => setManufacturer(e.target.value)} placeholder="Manufacturer" className="border px-3 py-2 rounded" />
             <input type="text" value={vaccineBatch} onChange={(e) => setVaccineBatch(e.target.value)} placeholder="Batch Number" className="border px-3 py-2 rounded" />
-            <input type="date" value={expiryDate} onChange={(e) => setExpiryDate(e.target.value)} className="border px-3 py-2 rounded" />
+            <input type={expiryDate ? "date" : "text"} value={expiryDate} onChange={(e) => setExpiryDate(e.target.value)} className="border px-3 py-2 rounded" placeholder="Expiry Date"  onFocus={(e) => !expiryDate && (e.target.type = 'date')} onBlur={(e) => !e.target.value && (e.target.type = 'text')} />
             <input type="text" value={dosage} onChange={(e) => setDosage(e.target.value)} placeholder="Dosage & Method" className="border px-3 py-2 rounded" />
           </div>
         </div>
@@ -315,7 +315,16 @@ const resetForm = () => {
         <div>
           <h3 className="text-lg font-semibold text-gray-700 mb-2">Vaccination Process</h3>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <input type="datetime-local" value={dateTime} onChange={(e) => setDateTime(e.target.value)} className="border px-3 py-2 rounded" required />
+          <input 
+              type={dateTime ? "datetime-local" : "text"} 
+              value={dateTime} 
+              onChange={(e) => setDateTime(e.target.value)} 
+              className="border px-3 py-2 rounded" 
+              placeholder="Date & Time of Vaccination"
+              onFocus={() => !dateTime && (e.target.type = 'datetime-local')}
+              onBlur={() => !dateTime && (e.target.type = 'text')}
+              required 
+            />            
             <input type="text" value={administeredBy} onChange={(e) => setAdministeredBy(e.target.value)} placeholder="Administered By" className="border px-3 py-2 rounded" />
             <input type="number" value={vaccinatedCount} onChange={(e) => setVaccinatedCount(e.target.value)} placeholder="No. Vaccinated" className="border px-3 py-2 rounded" />
             <input type="text" value={withdrawalTime} onChange={(e) => setWithdrawalTime(e.target.value)} placeholder="Withdrawal Time" className="border px-3 py-2 rounded" />
@@ -328,8 +337,16 @@ const resetForm = () => {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <input type="text" value={preHealthCheck} onChange={(e) => setPreHealthCheck(e.target.value)} placeholder="Pre-Vaccination Health Check" className="border px-3 py-2 rounded" />
             <input type="text" value={postReactions} onChange={(e) => setPostReactions(e.target.value)} placeholder="Post-Vaccination Reactions" className="border px-3 py-2 rounded" />
-            <input type="date" value={nextVaccinationDate} onChange={(e) => setNextVaccinationDate(e.target.value)} className="border px-3 py-2 rounded" />
-          </div>
+            <input 
+              type={nextVaccinationDate ? "date" : "text"}
+              value={nextVaccinationDate} 
+              onChange={(e) => setNextVaccinationDate(e.target.value)} 
+              className="border px-3 py-2 rounded" 
+              placeholder="Next Vaccination Date"
+              onFocus={(e) => !nextVaccinationDate && (e.target.type = 'date')}
+              onBlur={(e) => !e.target.value && (e.target.type = 'text')}
+            />
+            </div>
         </div>
 
 

@@ -25,6 +25,7 @@
     "dompurify": "^3.2.6",
     "file-saver": "^2.0.5",
     "framer-motion": "^12.7.4",
+    "html2canvas": "^1.4.1",
     "lucide-react": "^0.503.0",
     "marked": "^15.0.12",
     "react": "^19.0.0",

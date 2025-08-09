@@ -1,5 +1,4 @@
-// components/ChicksPieChart.jsx
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { Pie } from 'react-chartjs-2';
 import {
   Chart as ChartJS,
@@ -8,12 +7,16 @@ import {
   Legend
 } from 'chart.js';
 import { fetchFlockStatusCounts } from '../services/api';
+import { useChartExport } from '../hooks/useChartExport';
+import { Download } from 'lucide-react';
 
 // Register the pie chart elements
 ChartJS.register(ArcElement, Tooltip, Legend);
 
 export default function ChicksPieChart() {
   const [statusCounts, setStatusCounts] = useState(null);
+  const chartRef = useRef(null);
+  const { exportChart, isExporting } = useChartExport();
 
   useEffect(() => {
     const loadData = async () => {
@@ -26,6 +29,12 @@ export default function ChicksPieChart() {
     };
     loadData();
   }, []);
+
+  const handleExport = async () => {
+    if (!chartRef.current) return;
+    await new Promise(resolve => setTimeout(resolve, 300)); // Wait for chart render
+    await exportChart(chartRef.current, 'chicks-status-distribution');
+  };
 
   if (!statusCounts) {
     return (
@@ -71,9 +80,21 @@ export default function ChicksPieChart() {
   };
 
   return (
-    <div className="bg-white p-6 rounded-lg shadow-md h-full">
-      <h3 className="text-lg font-semibold text-gray-700 mb-4">Chicks Overview</h3>
-      <Pie data={data} options={options} />
+    <div className="bg-white p-6 rounded-lg shadow-md h-full relative">
+      <div className="flex justify-between items-center mb-4">
+        <h3 className="text-lg font-semibold text-gray-700">Chicks Overview</h3>
+        <button
+          onClick={handleExport}
+          disabled={isExporting}
+          className="p-2 text-green-600 hover:text-green-800 transition-colors"
+          title="Export chart"
+        >
+          <Download className={`h-5 w-5 ${isExporting ? 'opacity-50' : ''}`} />
+        </button>
+      </div>
+      <div ref={chartRef}>
+        <Pie data={data} options={options} />
+      </div>
     </div>
   );
 }

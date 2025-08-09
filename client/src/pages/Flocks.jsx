@@ -8,6 +8,7 @@ import { toast } from 'react-toastify';
 
 export default function FlockList() {
   const [flocks, setFlocks] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -16,11 +17,14 @@ export default function FlockList() {
 
   async function loadFlocks() {
     try {
+      setIsLoading(true);
       const data = await fetchFlocks();
       setFlocks(data);
     } catch (error) {
       console.error('Failed to load flocks:', error);
       toast.error('Failed to load flocks');
+    } finally {
+      setIsLoading(false);
     }
   }
 
@@ -55,7 +59,32 @@ export default function FlockList() {
         <div className="max-w-4xl mx-auto">
           <h1 className="text-3xl font-bold text-green-600 mb-8 text-center">Your Flocks</h1>
 
-          {flocks.length === 0 ? (
+          {isLoading ? (
+            <div className="grid gap-6 md:grid-cols-2">
+              {[...Array(4)].map((_, index) => (
+                <div key={index} className="bg-white border border-gray-200 rounded-2xl shadow-sm p-6">
+                  <div className="animate-pulse">
+                    <div className="flex items-center gap-3 mb-4">
+                      <div className="rounded-full bg-gray-200 h-6 w-6"></div>
+                      <div className="h-6 bg-gray-200 rounded w-3/4"></div>
+                    </div>
+                    <div className="space-y-2">
+                      <div className="h-4 bg-gray-200 rounded w-1/2"></div>
+                      <div className="h-4 bg-gray-200 rounded w-1/3"></div>
+                    </div>
+                    <div className="mt-4 flex justify-between items-center">
+                      <div className="flex gap-3">
+                        <div className="h-5 w-5 bg-gray-200 rounded"></div>
+                        <div className="h-5 w-5 bg-gray-200 rounded"></div>
+                        <div className="h-5 w-5 bg-gray-200 rounded"></div>
+                      </div>
+                      <div className="h-5 w-5 bg-gray-200 rounded"></div>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          ) : flocks.length === 0 ? (
             <div className="text-center text-gray-600">
               <Bird className="mx-auto mb-4 w-12 h-12 text-green-600" />
               <p>No flocks available. Please add one to get started.</p>
