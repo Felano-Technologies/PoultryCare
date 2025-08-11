@@ -3,24 +3,43 @@ import mongoose from 'mongoose';
 const commentSchema = new mongoose.Schema({
   text: { 
     type: String, 
-    required: [true, 'Comment text is required'],
     trim: true,
     maxlength: [1000, 'Comment cannot exceed 1000 characters']
   },
-  author: { 
-    type: mongoose.Schema.Types.ObjectId, 
-    ref: 'User', 
-    required: [true, 'Author is required'] 
+  media: [{
+    url: {
+      type: String,
+      required: [true, 'Media URL is required']
+    },
+    type: {
+      type: String,
+      required: [true, 'Media type is required'],
+      enum: {
+        values: ['image', 'video', 'audio'],
+        message: 'Media type must be image, video, or audio'
+      }
+    },
+    publicId: {
+      type: String,
+      required: false // Optional but recommended
+    }
+  }],
+  author: {
+    userId: { 
+      type: mongoose.Schema.Types.ObjectId, 
+      ref: 'User', 
+      required: [true, 'User ID is required'] 
+    },
+    name: { 
+      type: String, 
+      required: [true, 'Author name is required'] 
+    }
   },
   post: { 
     type: mongoose.Schema.Types.ObjectId, 
     ref: 'Post', 
     required: [true, 'Post reference is required'] 
   },
-  authorName: {  // Add this for easier display without population
-    type: String,
-    required: true
-  }
 }, { 
   timestamps: true,
   toJSON: { virtuals: true },

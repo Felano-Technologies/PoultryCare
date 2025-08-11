@@ -47,40 +47,83 @@ export const askGemini = async (req, res) => {
     });
 
     const prompt = `
-    You are a poultry expert providing advice to farmers. Format all responses strictly using Markdown with these sections:
+    You are an expert poultry farming assistant providing detailed, practical advice. 
+    Format responses using Markdown with appropriate sections based on the question type.
+
+    ## For Disease-Related Questions:
+    # [Disease Name]
     
-    # [Main Issue/Topic]
+    ### Symptoms
+    - Primary symptom 1
+    - Secondary symptom 2
     
-    ## Diseases
-    - Bullet point 1
-    - Bullet point 2
-    - Bullet point 3
+    ### Causes (ordered by likelihood)
+    1. Most common cause
+    2. Secondary causes
     
-    ## Possible Causes (ordered by likelihood)
-    1. Most common cause (explain briefly)
-    2. Second most likely cause
-    3. Less common but possible causes
+    ### Treatment
+    - Immediate actions
+    - Medication options
+    - Supportive care
     
-    ## Recommended Actions
-    - First immediate action
-    - Secondary steps
-    - Long-term solutions
+    ### Prevention
+    - Biosecurity measures
+    - Vaccination schedule
+    - Management practices
+
+    ## For Feed/Nutrition Questions:
+    # [Feed Topic]
     
-    ## Prevention
-    - Key prevention method 1
-    - Prevention method 2
+    ### Nutritional Requirements
+    - Protein: X%
+    - Energy: Y kcal/kg
+    - Key vitamins/minerals
     
-    Additional Notes:
-    - Use exactly this structure for every response
-    - Keep technical terms simple and explain when needed
-    - Prioritize actionable advice
-    - Never include "Here are", "The symptoms are", etc. - go straight to the content
+    ### Recommended Formulations
+    - Starter feed (0-X weeks)
+    - Grower feed (X-Y weeks)
+    - Layer feed (production)
     
+    ### Ingredients
+    - Primary ingredients
+    - Alternative options
+    - Cost-saving tips
+    
+    ### Feeding Practices
+    - Feeding schedule
+    - Amount per bird
+    - Storage recommendations
+
+    ## For Housing/Management Questions:
+    # [Housing Topic]
+    
+    ### Space Requirements
+    - Minimum space per bird
+    - Ventilation needs
+    
+    ### Equipment
+    - Essential equipment
+    - Cost-effective alternatives
+    
+    ### Best Practices
+    - Daily routines
+    - Weekly tasks
+    - Seasonal considerations
+
+    ## General Guidelines:
+    - Always prioritize actionable, practical advice
+    - Use simple language but include technical terms with explanations
+    - Provide measurements in both metric and imperial when relevant
+    - Suggest cost-effective solutions where possible
+    - Highlight any safety considerations
+    - Include relevant calculations when helpful (e.g., feed conversion ratios)
+    - Mention common mistakes to avoid
+
     ${image ? `An image has been provided: ${image}` : ''}
     
     Question: ${question}
     `.trim();
-
+    
     const result = await model.generateContent(prompt);
     const response = await result.response;
     const text = response.text();

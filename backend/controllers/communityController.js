@@ -1,38 +1,103 @@
 import Post from '../models/Post.js';
 import Comment from '../models/Comment.js';
 import User from '../models/User.js';
+import cloudinary from '../config/cloudinary.js';
+import { Readable } from 'stream';
 
 // @desc    Create a new post
 // @route   POST /api/community/posts
 // @access  Private
 // @desc    Create a new post
+// controllers/postController.js
+
+const uploadBufferToCloudinary = (fileBuffer, folder, resourceType = 'auto') => {
+  return new Promise((resolve, reject) => {
+    const uploadStream = cloudinary.uploader.upload_stream(
+      {
+        folder,
+        resource_type: resourceType,
+        allowed_formats: ['jpg', 'jpeg', 'png', 'gif', 'mp4', 'mov', 'mp3', 'wav', 'webm', 'webp'],
+      },
+      (error, result) => {
+        if (error) reject(error);
+        else resolve(result.secure_url);
+      }
+    );
+    Readable.from(fileBuffer).pipe(uploadStream);
+  });
+};
+
 export const createPost = async (req, res) => {
   try {
     const { content } = req.body;
-    
-    const user = await User.findById(req.user._id).select('farmName');
+    const userId = req.user._id;
+
+    // Get user name
+    const user = await User.findById(userId).select('farmName name');
     if (!user) {
       return res.status(404).json({ message: 'User not found' });
     }
 
-    const post = new Post({
+    const media = []; // Changed from mediaUrls to media array with type info
+
+    // Handle images
+    if (req.files.images) {
+      for (const file of req.files.images) {
+        const url = await uploadBufferToCloudinary(file.buffer, 'community_posts/images', 'image');
+        media.push({
+          url,
+          type: 'image', // Explicitly store type
+          publicId: url.split('/').pop().split('.')[0] // Optional: store Cloudinary public ID
+        });
+      }
+    }
+
+    // Handle videos
+    if (req.files.videos) {
+      for (const file of req.files.videos) {
+        const url = await uploadBufferToCloudinary(file.buffer, 'community_posts/videos', 'video');
+        media.push({
+          url,
+          type: 'video',
+          publicId: url.split('/').pop().split('.')[0]
+        });
+      }
+    }
+
+    // Handle voice notes - changed resource_type to 'auto' or 'video' depending on your needs
+    if (req.files.voiceNotes) {
+      for (const file of req.files.voiceNotes) {
+        const url = await uploadBufferToCloudinary(
+          file.buffer, 
+          'community_posts/voiceNotes', 
+          'auto' // Changed from 'video' to 'auto' for better audio handling
+        );
+        media.push({
+          url,
+          type: 'audio', // Changed from video to audio
+          publicId: url.split('/').pop().split('.')[0]
+        });
+      }
+    }
+
+    // Save post with complete media information
+    const post = await Post.create({
       content,
+      media, // Now includes both URL and type
       author: {
-        userId: req.user._id,
-        name: user.farmName
+        userId,
+        name: user.farmName || user.name
       }
     });
 
-    const savedPost = await post.save();
-    res.status(201).json(savedPost);
+    res.status(201).json(post);
   } catch (error) {
-    console.error('Create Post Error:', error);
-    res.status(500).json({ 
-      message: 'Failed to create post',
-      error: process.env.NODE_ENV === 'development' ? error.message : undefined
-    });
+    console.error('Error creating post:', error);
+    res.status(500).json({ message: 'Failed to create post', error: error.message });
   }
 };
+
+
 
 // @desc    Update a post
 export const updatePost = async (req, res) => {
@@ -104,7 +169,96 @@ export const getPosts = async (req, res) => {
   }
 };
 
-// @desc    Get comments for a specific post
+// @desc    Add comment to a post with media support
+// @route   POST /api/community/posts/:postId/comments
+// @access  Private
+export const addComment = async (req, res) => {
+  try {
+    const text = req.body.text || req.body.content || '';
+    const { postId } = req.params;
+    const userId = req.user._id;
+
+    // Verify post exists
+    const post = await Post.findById(postId);
+    if (!post) {
+      return res.status(404).json({ message: 'Post not found' });
+    }
+
+    // Get user info
+    const user = await User.findById(userId).select('farmName name');
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    const media = [];
+
+    // Handle comment images
+    if (req.files.images) {
+      for (const file of req.files.images) {
+        const url = await uploadBufferToCloudinary(file.buffer, 'community_comments/images', 'image');
+        media.push({
+          url,
+          type: 'image',
+          publicId: url.split('/').pop().split('.')[0]
+        });
+      }
+    }
+
+    // Handle comment videos
+    if (req.files.videos) {
+      for (const file of req.files.videos) {
+        const url = await uploadBufferToCloudinary(file.buffer, 'community_comments/videos', 'video');
+        media.push({
+          url,
+          type: 'video',
+          publicId: url.split('/').pop().split('.')[0]
+        });
+      }
+    }
+
+    // Handle comment voice notes
+    if (req.files.voiceNotes) {
+      for (const file of req.files.voiceNotes) {
+        const url = await uploadBufferToCloudinary(file.buffer, 'community_comments/voiceNotes', 'auto');
+        media.push({
+          url,
+          type: 'audio',
+          publicId: url.split('/').pop().split('.')[0]
+        });
+      }
+    }
+
+    // Validate that either text or media is provided
+    if (!text && media.length === 0) {
+      return res.status(400).json({ message: 'Comment must contain either text or media' });
+    }
+
+    // Create the comment
+    const comment = await Comment.create({
+      text,
+      media,
+      author: {
+        userId,
+        name: user.farmName || user.name
+      },
+      post: postId
+    });
+
+    // Add comment to post's comments array
+    post.comments.push(comment._id);
+    await post.save();
+
+    res.status(201).json(comment);
+  } catch (error) {
+    console.error('Error adding comment:', error);
+    res.status(500).json({ 
+      message: 'Failed to add comment',
+      error: process.env.NODE_ENV === 'development' ? error.message : undefined
+    });
+  }
+};
+
+// @desc    Get comments for a specific post (updated to include media)
 // @route   GET /api/community/posts/:postId/comments
 // @access  Public
 export const getPostComments = async (req, res) => {
@@ -136,47 +290,6 @@ export const getPostComments = async (req, res) => {
     res.status(500).json({ 
       success: false,
       message: 'Failed to retrieve post comments',
-      error: process.env.NODE_ENV === 'development' ? error.message : undefined
-    });
-  }
-};
-
-
-// @desc    Add comment to a post
-// @route   POST /api/community/posts/:postId/comments
-// @access  Private
-export const addComment = async (req, res) => {
-  try {
-    const { text } = req.body;
-    const post = await Post.findById(req.params.postId);
-
-    if (!post) {
-      return res.status(404).json({ message: 'Post not found' });
-    }
-
-    const user = await User.findById(req.user._id);
-    if (!user) {
-      return res.status(404).json({ message: 'User not found' });
-    }
-
-    const comment = new Comment({
-      text,
-      author: req.user._id,
-      authorName: user.farmName,  // Store name directly
-      post: post._id
-    });
-
-    const savedComment = await comment.save();
-    
-    // Add comment to post and save
-    post.comments.push(savedComment._id);
-    await post.save();
-
-    res.status(201).json(savedComment);
-  } catch (error) {
-    console.error('Error adding comment:', error);
-    res.status(500).json({ 
-      message: 'Server Error',
       error: process.env.NODE_ENV === 'development' ? error.message : undefined
     });
   }

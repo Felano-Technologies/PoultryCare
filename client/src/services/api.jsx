@@ -2,9 +2,9 @@ import axios from "axios";
 import toast from "react-hot-toast";
 
 const API = axios.create({
-  // baseURL: "http://localhost:5000/api",
+  baseURL: "http://localhost:5000/api",
   // baseURL: "http://172.20.10.2:5000/api",
-  baseURL: "https://poultrycare.onrender.com/api",
+  // baseURL: "https://poultrycare.onrender.com/api",
 });
 
 // Automatically attach token if available
@@ -280,10 +280,7 @@ export const getForumComments = async (postId) => {
   return response.data;
 };
 
-export const createForumPost = async (content) => {
-  const response = await API.post("/community/posts", { content });
-  return response.data;
-};
+
 
 export const updateForumPost = async (postId, content) => {
   const response = await API.put(`/community/posts/${postId}`, { content });
@@ -318,6 +315,70 @@ export const getUserConsultations = async () => {
 
 export const getChatResponse = async (message) => {
   const response = await API.post("/consultation/chat", { message });
+  return response.data;
+};
+
+
+// Updated forum post creation with media support
+export const createForumPostWithMedia = async (formData) => {
+  try {
+    const response = await API.post("/community/posts", formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data'
+      }
+    });
+    return response.data;
+  } catch (error) {
+    console.error('Error creating post with media:', error);
+    throw error;
+  }
+};
+
+// --- Forum Post Media Management ---
+export const deleteForumMedia = async (postId, publicId) => {
+  const response = await API.delete(`/community/posts/${postId}/media`, {
+    data: { public_id: publicId }
+  });
+  return response.data;
+};
+
+// --- Voice Note Handling ---
+export const uploadVoiceNote = async (audioBlob) => {
+  const formData = new FormData();
+  formData.append('audio', audioBlob, 'voice-note.webm');
+  formData.append('upload_preset', process.env.REACT_APP_CLOUDINARY_UPLOAD_PRESET);
+
+  const response = await API.post('/community/upload-voice', formData, {
+    headers: {
+      'Content-Type': 'multipart/form-data'
+    }
+  });
+  return response.data;
+};
+
+
+
+// services/api.js (additional functions)
+export const addCommentWithMedia = async (postId, formData) => {
+  const response = await API.post(`/community/posts/${postId}/comments`, formData, {
+    headers: {
+      'Content-Type': 'multipart/form-data'
+    }
+  });
+  return response.data;
+};
+
+export const uploadCommentMedia = async (file, type) => {
+  const formData = new FormData();
+  formData.append('file', file);
+  formData.append('upload_preset', process.env.REACT_APP_CLOUDINARY_UPLOAD_PRESET);
+  formData.append('resource_type', type === 'videos' ? 'video' : 'auto');
+
+  const response = await API.post('/community/upload-comment-media', formData, {
+    headers: {
+      'Content-Type': 'multipart/form-data'
+    }
+  });
   return response.data;
 };
 
